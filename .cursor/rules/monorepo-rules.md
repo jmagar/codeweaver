@@ -1,0 +1,55 @@
+# Rule: Monorepo Management
+
+This rule outlines the specific guidelines for managing the `pnpm` monorepo, including dependency management, package scripts, and inter-package dependencies.
+
+## 1. Dependency Management
+
+- **Use `pnpm` for all dependency operations**: Do not use `npm` or `yarn`.
+- **Adding Dependencies**:
+  - To a specific package: `pnpm --filter <package-name> add <dependency>`
+    - **Example**: `pnpm --filter @codeweaver/api add zod`
+  - To the root as a dev dependency: `pnpm add -D -w <dependency>`
+    - **Example**: `pnpm add -D -w typescript`
+- **Workspace Dependencies**: When adding a dependency on another package within the monorepo, use the `workspace:*` protocol to ensure the local version is always used.
+  - **Example**: In `apps/web/package.json`, a dependency on `packages/ui` should be:
+    ```json
+    "dependencies": {
+      "@codeweaver/ui": "workspace:*"
+    }
+    ```
+
+## 2. Running Scripts
+
+- **Use `pnpm --filter` to target packages**: The `--filter` flag is the primary way to run scripts in specific parts of the monorepo.
+  - **Run `build` script in `packages/ui`**: `pnpm --filter @codeweaver/ui build`
+  - **Run `dev` script in all `apps`**: `pnpm --filter "./apps/*" dev`
+- **Root `package.json` Scripts**: The root `package.json` contains scripts that orchestrate tasks across the entire monorepo. Use these whenever possible.
+  - **`pnpm build`**: Builds all packages and apps in the correct order.
+  - **`pnpm dev`**: Starts all applications in development mode.
+  - **`pnpm lint`**: Lints the entire codebase.
+
+## 3. Creating New Packages or Apps
+
+1.  Create a new directory in either `apps/` or `packages/`.
+2.  Add a `package.json` file with a scoped name (e.g., `@codeweaver/new-package`).
+3.  Add a `tsconfig.json` that extends one of the base configs from `tooling/tsconfig`.
+4.  Add a reference to the new package in the root `tsconfig.json` to include it in the TypeScript build graph.
+5.  Run `pnpm install` from the root to link the new package into the workspace.
+
+## 4. TypeScript Project References
+
+- The monorepo relies on TypeScript project references for incremental builds and type-checking.
+- When one package depends on another, a `reference` must be added to its `tsconfig.json`.
+- **Example**: `packages/api` depends on `packages/db`. The `packages/api/tsconfig.json` must contain:
+  ```json
+  "references": [
+    { "path": "../db" }
+  ]
+  ```
+- All packages must have `composite: true` and `declaration: true` enabled in their `compilerOptions`.
+
+## 5. Environment Variables
+- Shared environment variables are not supported. Each application in `apps/` is responsible for loading its own environment variables (e.g., from `.env.local`).
+- Packages in `packages/` should not directly access environment variables. Instead, they should receive configuration values as arguments from the application that is using them. This enforces separation of concerns.
+
+Adherence to these monorepo management rules is essential for maintaining a healthy, scalable, and efficient codebase. 

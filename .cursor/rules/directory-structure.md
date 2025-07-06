@@ -1,0 +1,47 @@
+# Rule: Monorepo Directory Structure
+
+This rule defines the official directory structure for the CodeWeaver monorepo. All AI-assisted code generation, refactoring, and file creation tasks must adhere to this structure.
+
+## Core Structure
+
+The monorepo is organized into three primary top-level directories:
+
+- **`apps/`**: Contains deployable applications (e.g., frontend web server, documentation site).
+- **`packages/`**: Contains shared code, libraries, and logic consumed by the applications.
+- **`tooling/`**: Contains shared development configurations (e.g., ESLint, TypeScript).
+
+## Detailed Layout
+
+```
+/
+├── apps/
+│   └── web/                 # Next.js 15 frontend application
+├── packages/
+│   ├── api/                 # tRPC router definitions and API logic
+│   ├── db/                  # Prisma schema, client, and migrations
+│   ├── lib/                 # Shared business logic (AI providers, MCP)
+│   └── ui/                  # Shared React components
+└── tooling/
+    ├── eslint/              # Shared ESLint configurations
+    ├── prettier/            # Shared Prettier configuration
+    ├── tsconfig/            # Shared TypeScript base configurations
+    └── jest/                # Shared Jest test configurations
+```
+
+## Placement Guidelines
+
+### Applications (`apps/`)
+- Any code that results in a deployable artifact (e.g., a website, a service) belongs here.
+- Application-specific components or logic should reside within that app's directory, not in a shared package.
+
+### Shared Packages (`packages/`)
+- **`packages/api`**: All tRPC routers, procedures, context, and initialization. This package should be self-contained and expose the `appRouter`.
+- **`packages/db`**: The Prisma schema (`schema.prisma`) and the exported Prisma client instance. No application logic should be here.
+- **`packages/lib`**: For pure TypeScript/JavaScript logic that is shared across multiple apps or packages. Examples: AI provider abstractions, core utilities, constants.
+- **`packages/ui`**: Shared, presentation-agnostic React components. These components should not contain business logic.
+
+### Tooling (`tooling/`)
+- All shared configurations for tools like ESLint, Prettier, and TypeScript must be placed here.
+- Individual apps/packages should extend these base configurations rather than creating their own from scratch.
+
+When creating new files or features, always evaluate whether the code is specific to one application or can be generalized and placed in a shared package. Adherence to this structure is critical for maintaining a scalable and organized codebase. 

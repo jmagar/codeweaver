@@ -1,0 +1,50 @@
+# Rule: AI Provider and Integration Patterns
+
+This rule defines the patterns for integrating with and managing AI providers (e.g., OpenRouter, Claude, Gemini) and the Model Context Protocol (MCP).
+
+## 1. Provider Abstraction Layer
+All interactions with external AI models **must** go through the central provider abstraction layer located in `packages/lib/ai`. Direct API calls to a provider from application logic are strictly forbidden.
+
+### Core `AIProvider` Interface
+All provider implementations must adhere to a common interface to ensure they are interchangeable.
+
+```typescript
+interface AIProvider {
+  id: string; // e.g., 'openrouter', 'claude'
+  name: string; // e.g., 'OpenRouter', 'Anthropic Claude'
+
+  generate(options: GenerateOptions): Promise<GenerateResult>;
+  stream(options: StreamOptions): AsyncIterable<StreamChunk>;
+}
+```
+
+- **Implementation**: A factory or strategy pattern should be used to instantiate the correct provider based on configuration.
+- **Location**: `packages/lib/ai/providers/`.
+
+## 2. AI SDK v5 Usage
+The [Vercel AI SDK v5](https://sdk.vercel.ai/docs) is the primary tool for managing interactions with LLMs.
+- **`streamText` and `generateText`**: Use these core functions for all LLM calls.
+- **Structured Content**: Leverage the `UIMessage` and `parts` system to handle multi-modal content (text, tools, images) in a structured way. Do not just pass raw strings.
+- **Type Safety**: Use Zod schemas within the `tool()` helper to define tool inputs and outputs for maximum type safety.
+
+## 3. Model Context Protocol (MCP) Integration
+MCP is used to extend the AI's capabilities with external tools and data.
+- **MCP Client**: The client for connecting to MCP servers is managed in `packages/lib/mcp`.
+- **Tool Execution**: Calling an MCP tool should be handled through the tRPC API (e.g., `trpc.mcp.callTool.mutate(...)`) to ensure proper permissions and context are applied.
+- **Dynamic Tools**: The application should be able to dynamically list and present available MCP tools to the user or the AI agent.
+
+## 4. Configuration
+- **Centralized**: All provider configurations, including API keys and model identifiers, must be managed via environment variables.
+- **User-Selectable**: The application should allow users to select their preferred AI provider, and this preference should be stored in the database. A default provider will be used if none is selected.
+
+## 5. Error Handling and Fallbacks
+- **Robust Error Handling**: Each provider implementation must handle common errors (e.g., rate limits, API downtime, authentication failures) gracefully.
+- **Fallback Strategy**: The provider abstraction layer should support a fallback mechanism. If a request to the primary provider fails, it should automatically retry with a secondary provider based on a predefined order.
+- **Circuit Breaker**: Implement a circuit breaker pattern to temporarily disable a provider that is consistently failing, preventing repeated failed requests.
+
+## 6. Caching
+- **LLM Response Caching**: Implement a semantic caching layer using Redis. Before making a new AI request, check the cache for a semantically similar query.
+  - **Cache Key**: Use a hash of the query and relevant context.
+  - **TTL**: Set a reasonable Time-To-Live (TTL) for cached responses to avoid staleness.
+
+By following these patterns, we ensure our AI integrations are robust, scalable, and easy to maintain or extend with new providers in the future. 

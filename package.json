@@ -1,0 +1,11 @@
+{
+  "name": "codeweaver-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter web build",
+    "dev": "pnpm --filter web dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

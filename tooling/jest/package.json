@@ -1,0 +1,11 @@
+{
+  "name": "@codeweaver/jest-config",
+  "version": "1.0.0",
+  "private": true,
+  "files": [
+    "jest.preset.js"
+  ],
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+} 
