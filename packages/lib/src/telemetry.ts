@@ -24,6 +24,11 @@ const sdk = new NodeSDK({
   ],
 });
 
-sdk.start().catch((err) => {
-  console.error('Failed to start OpenTelemetry SDK', err);
-});
+(async () => {
+  try {
+    await sdk.start();
+    console.log('OpenTelemetry SDK started');
+  } catch (err) {
+    console.error('Failed to start OpenTelemetry SDK', err);
+  }
+})();
