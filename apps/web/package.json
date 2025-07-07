@@ -19,7 +19,8 @@
     "@tanstack/react-query": "^5.81.5",
     "react": "19.0.0-rc.1",
     "react-dom": "19.0.0-rc.1",
-    "next": "15.0.0-rc.0"
+    "next": "15.0.0-rc.0",
+    "next-auth": "^5.0.0-beta.15"
   },
   "devDependencies": {
     "@codeweaver/eslint-config": "workspace:*",
