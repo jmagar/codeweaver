@@ -19,6 +19,9 @@
     "@trivago/prettier-plugin-sort-imports": "^4.2.1",
     "eslint": "^9.0.0",
     "turbo": "^2.5.1",
-    "@types/node": "^20.11.19"
+    "@types/node": "^20.11.19",
+    "@eslint/js": "^9.0.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "globals": "^16.3.0"
   }
 }
