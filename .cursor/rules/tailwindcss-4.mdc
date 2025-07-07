@@ -1,0 +1,251 @@
+---
+description: Defines patterns and best practices for TailwindCSS 4.x, including theme variables, custom utilities, and migration from v3.x.
+globs: ["**/*.css", "apps/web/src/app/globals.css"]
+alwaysApply: false
+---
+# Rule: TailwindCSS 4.x Patterns and Best Practices
+
+This rule defines the patterns, syntax, and best practices for using TailwindCSS 4.x in the CodeWeaver project. TailwindCSS 4 introduces significant changes from v3, including new directives, theme variable systems, and configuration approaches.
+
+## 1. Core TailwindCSS 4 Directives
+
+### @theme Directive
+Use `@theme` to define theme variables that automatically generate corresponding utility classes:
+
+```css
+@theme {
+  --color-primary: hsl(221.2 83.2% 53.3%);
+  --color-secondary: hsl(210 40% 98%);
+  --font-brand: 'Inter', sans-serif;
+  --spacing-custom: 2.5rem;
+}
+```
+
+**Key Rules:**
+- Theme variables must be defined at the top level, not nested
+- Variable names follow namespace conventions (e.g., `--color-*`, `--font-*`, `--spacing-*`)
+- Each theme variable automatically creates corresponding utilities (e.g., `bg-primary`, `font-brand`)
+
+### @utility Directive
+Define custom utilities that work with all TailwindCSS variants:
+
+```css
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility glass {
+  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+}
+```
+
+### @source Directive
+Configure content sources for class detection:
+
+```css
+@source "../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
+```
+
+## 2. Theme Variable Namespaces
+
+TailwindCSS 4 uses specific namespaces for theme variables. Each namespace corresponds to utility classes:
+
+| Namespace | Generated Utilities | Example |
+|-----------|-------------------|---------|
+| `--color-*` | Color utilities | `bg-primary`, `text-accent` |
+| `--font-*` | Font family utilities | `font-sans`, `font-mono` |
+| `--text-*` | Font size utilities | `text-xl`, `text-2xl` |
+| `--spacing-*` | Spacing utilities | `p-4`, `m-8`, `w-custom` |
+| `--radius-*` | Border radius utilities | `rounded-sm`, `rounded-custom` |
+| `--shadow-*` | Box shadow utilities | `shadow-md`, `shadow-glow` |
+| `--animate-*` | Animation utilities | `animate-spin`, `animate-fade` |
+| `--breakpoint-*` | Responsive variants | `sm:*`, `lg:*`, `custom:*` |
+
+## 3. CSS Variable Usage Patterns
+
+### Modern Color Mixing
+Instead of HSL color manipulation, use `color-mix()` for transparency and color variations:
+
+```css
+/* ❌ TailwindCSS v3 pattern - avoid */
+background-color: hsl(var(--color-primary-hsl) / 0.5);
+
+/* ✅ TailwindCSS 4 pattern */
+background-color: color-mix(in srgb, var(--color-primary) 50%, transparent);
+```
+
+### Theme Variable References
+Reference theme variables directly in custom CSS:
+
+```css
+.custom-component {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: var(--font-sans);
+  padding: var(--spacing);
+}
+```
+
+## 4. Animation and Keyframes
+
+Define keyframes within the `@theme` block for tree-shaking support:
+
+```css
+@theme {
+  --animate-fade-in: fade-in 0.3s ease-out;
+  
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+```
+
+## 5. Configuration Patterns
+
+### PostCSS Configuration
+Use the `@tailwindcss/postcss` plugin with content sources:
+
+```javascript
+// postcss.config.js
+module.exports = {
+  plugins: {
+    '@tailwindcss/postcss': {
+      sources: ['./src/**/*.{js,ts,jsx,tsx}'],
+    },
+  },
+};
+```
+
+### CSS Import Structure
+```css
+@import "tailwindcss";
+@source "./src/**/*.{js,ts,jsx,tsx}";
+
+@theme {
+  /* Theme variables */
+}
+
+@layer base {
+  /* Base styles and dark mode */
+}
+
+/* Custom utilities */
+@utility custom-class {
+  /* Custom utility definitions */
+}
+```
+
+## 6. Dark Mode Patterns
+
+Override theme variables using CSS classes:
+
+```css
+@theme {
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(222.2 84% 4.9%);
+}
+
+@layer base {
+  .dark {
+    --color-background: hsl(222.2 84% 4.9%);
+    --color-foreground: hsl(210 40% 98%);
+  }
+}
+```
+
+## 7. Migration from TailwindCSS v3
+
+### Configuration Changes
+- **Remove** `tailwind.config.js` file
+- **Replace** with CSS-based configuration using `@theme`
+- **Update** PostCSS config to use `@tailwindcss/postcss`
+
+### Theme Customization
+```css
+/* v3 config.js */
+module.exports = {
+  theme: {
+    colors: { primary: '#3b82f6' }
+  }
+}
+
+/* v4 CSS */
+@theme {
+  --color-primary: #3b82f6;
+}
+```
+
+### Custom Utilities
+```css
+/* v3 plugin system */
+// tailwind.config.js addUtilities()
+
+/* v4 @utility directive */
+@utility scroll-smooth {
+  scroll-behavior: smooth;
+}
+```
+
+## 8. Best Practices
+
+### Theme Organization
+- Group related variables together in `@theme` blocks
+- Use consistent naming conventions within namespaces
+- Document complex theme variables with comments
+
+### Performance
+- Use `@utility` for reusable custom styles instead of `@apply`
+- Define animations within `@theme` for tree-shaking
+- Leverage `color-mix()` for dynamic color variations
+
+### Maintainability
+- Keep theme definitions in a single location or well-organized imports
+- Use semantic color names (`--color-primary` vs `--color-blue-500`)
+- Document custom utilities and their intended use cases
+
+### File Structure
+```css
+/* globals.css */
+@import "tailwindcss";
+@import "./theme.css";      /* Custom theme variables */
+@import "./utilities.css";  /* Custom utilities */
+
+@layer base {
+  /* Base styles */
+}
+```
+
+## 9. IDE Support
+
+### VSCode Configuration
+Ensure proper syntax highlighting and IntelliSense:
+
+```json
+// .vscode/settings.json
+{
+  "css.customData": [".vscode/tailwind-css-data.json"],
+  "css.lint.unknownAtRules": "ignore"
+}
+```
+
+### Custom Data for New Directives
+```json
+// .vscode/tailwind-css-data.json
+{
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Define theme variables for TailwindCSS 4.x"
+    },
+    {
+      "name": "@utility", 
+      "description": "Define custom utility classes for TailwindCSS 4.x"
+    }
+  ]
+}
+```
+
+By following these TailwindCSS 4 patterns, we ensure our styles are modern, performant, and maintainable while leveraging the full power of the new architecture.

@@ -1,0 +1,55 @@
+---
+description: Defines documentation and code comment standards for all code, APIs, and packages in the CodeWeaver project.
+alwaysApply: false
+---
+# Rule: Documentation Standards
+
+This rule defines the standards for documentation, code comments, and API docs across the CodeWeaver project.
+
+## 1. Code Comments
+
+- **TSDoc/JSDoc**: All exported functions, classes, and public APIs must have TSDoc or JSDoc comments describing their purpose, parameters, and return values.
+  ```typescript
+  /**
+   * Returns the user profile for a given user ID.
+   * @param userId - The user's unique identifier.
+   * @returns The user profile object.
+   */
+  export function getUserProfile(userId: string): UserProfile { ... }
+  ```
+- **Inline Comments**: Use inline comments to explain complex logic or non-obvious code sections.
+
+## 2. Package and Module Docs
+
+- **README.md**: Every package and app must have a README.md with:
+  - Purpose and usage
+  - API surface (main exports, procedures, or endpoints)
+  - Example usage
+  - Configuration/environment requirements
+
+## 3. API Documentation
+
+- **tRPC Procedures**: All tRPC procedures must have TSDoc comments describing:
+  - The procedure's purpose
+  - Input and output schemas
+  - Error cases
+- **OpenAPI/Schema Export**: If possible, export OpenAPI or JSON schema for public APIs.
+
+## 4. Templates
+
+- **Component Templates**: All new React components must include a TSDoc/JSDoc block at the top describing the component's purpose and props.
+- **tRPC Router Templates**: All new routers and procedures must include doc comments as shown in the trpc-router-template rule.
+
+## 5. Example
+
+```typescript
+/**
+ * @component
+ * Renders a user avatar with fallback.
+ * @param props.imageUrl - The URL of the user's avatar image.
+ * @param props.alt - The alt text for the image.
+ */
+export function UserAvatar({ imageUrl, alt }: { imageUrl: string; alt: string }) { ... }
+```
+
+By following these documentation standards, we ensure our codebase is understandable, maintainable, and easy for both humans and AI to navigate.

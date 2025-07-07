@@ -1,0 +1,66 @@
+---
+description: Standardizes error handling, logging, and observability patterns for all application layers (tRPC, Next.js, React, backend, and AI integrations).
+globs: ["packages/api/**", "apps/web/**", "packages/lib/**"]
+alwaysApply: false
+---
+# Rule: Error Handling & Logging
+
+This rule defines patterns for robust error handling, structured logging, and observability across the CodeWeaver project.
+
+## 1. Error Handling Patterns
+
+- **tRPC Procedures**: Always use `TRPCError` for expected errors (e.g., validation, not found, unauthorized). Map Zod validation errors to user-friendly messages.
+  ```typescript
+  import { TRPCError } from "@trpc/server";
+  throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+  ```
+- **Next.js API Routes**: Use try/catch and return structured error responses (with status codes and error messages).
+- **React Components**: Use error boundaries for UI-level error isolation. Show user-friendly error messages, never raw stack traces.
+- **AI Provider/External API Errors**: Always catch and log errors from external services. Surface actionable messages to the user, but never expose sensitive details.
+
+## 2. Logging
+
+- **Structured Logging**: Use `console.log`/`console.error` with metadata objects in development. In production, prefer a logger like `pino` or integrate with Sentry for error tracking.
+  ```typescript
+  console.error("Failed to fetch user", { userId, error });
+  ```
+- **Sensitive Data**: Never log secrets, tokens, or PII.
+- **Error Context**: Always include relevant context (user ID, request ID, operation) in logs.
+
+## 3. Observability
+
+- **Sentry Integration**: All unhandled exceptions in production must be reported to Sentry (or similar). Include user/session context where possible.
+- **Custom Error Classes**: For domain-specific errors, extend the base `Error` class and add a `code` property for easier handling/logging.
+- **Frontend Logging**: Use a centralized error reporting hook for React (e.g., `useErrorReporter`) to send errors to Sentry or a backend endpoint.
+
+## 4. User Feedback
+
+- **User-Facing Errors**: Always show actionable, non-technical error messages to users. For example: "Something went wrong. Please try again or contact support."
+- **Toast/Alert Patterns**: Use a consistent toast/alert system for error and success notifications in the UI.
+
+## 5. Example Patterns
+
+### tRPC
+```typescript
+try {
+  // ...logic
+} catch (err) {
+  if (err instanceof ZodError) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: err.errors[0]?.message });
+  }
+  throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Unexpected error" });
+}
+```
+
+### React Error Boundary
+```typescript
+class ErrorBoundary extends React.Component {
+  // ...
+  componentDidCatch(error, info) {
+    // Log to Sentry or backend
+  }
+  // ...
+}
+```
+
+By following these patterns, we ensure errors are handled gracefully, logged with context, and surfaced to users in a helpful way, while maintaining security and observability.

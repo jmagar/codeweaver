@@ -1,3 +1,7 @@
+---
+description: Establishes naming conventions for files, variables, components, directories, tRPC procedures, database models, and more.
+alwaysApply: false
+---
 # Rule: Naming Conventions
 
 This rule establishes the naming conventions for files, variables, components, and other assets within the CodeWeaver project. Consistency in naming is crucial for readability and maintainability.

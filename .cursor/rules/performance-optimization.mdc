@@ -1,0 +1,279 @@
+---
+description: Defines performance optimization patterns for database queries, React components, bundle size, and runtime performance across the CodeWeaver application.
+globs: ["packages/db/**", "packages/api/**", "apps/web/**"]
+alwaysApply: false
+---
+# Rule: Performance Optimization Patterns
+
+This rule defines performance optimization patterns across database queries, React components, bundle optimization, and runtime performance for the CodeWeaver project.
+
+## 1. Database Performance (Prisma)
+
+### Query Optimization
+- **Use `select` to limit fields**: Always specify only the fields you need instead of fetching entire models.
+  ```typescript
+  // ❌ Avoid - fetches all fields
+  const user = await prisma.user.findUnique({ where: { id } });
+  
+  // ✅ Preferred - only fetch needed fields
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { name: true, email: true }
+  });
+  ```
+
+- **Batch queries with `findMany` instead of loops**: Use single queries with filters instead of multiple individual queries.
+  ```typescript
+  // ❌ Avoid - N+1 query problem
+  for (const userId of userIds) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+  }
+  
+  // ✅ Preferred - single batched query
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } }
+  });
+  ```
+
+### Connection Management
+- **Use connection pooling**: Configure Prisma with appropriate connection limits.
+  ```typescript
+  // In packages/db/src/index.ts
+  export const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL + "?connection_limit=20&pool_timeout=20",
+      },
+    },
+  });
+  ```
+
+### Indexing Strategy
+- **Create indexes for frequent queries**: Add database indexes for commonly queried fields.
+  ```prisma
+  model User {
+    id    String @id
+    email String @unique
+    name  String
+    
+    @@index([email, name]) // Composite index for search queries
+  }
+  ```
+
+## 2. React & Next.js Performance
+
+### Component Optimization
+- **Use React.memo for expensive components**: Wrap components that receive stable props.
+  ```typescript
+  import { memo } from 'react';
+  
+  const ExpensiveComponent = memo(({ data }: { data: ComplexData }) => {
+    // Expensive rendering logic
+    return <div>{/* rendered content */}</div>;
+  });
+  ```
+
+- **Implement proper useCallback/useMemo**: Optimize callbacks and computed values.
+  ```typescript
+  const MemoizedComponent = ({ items, onFilter }: Props) => {
+    // Memoize expensive calculations
+    const filteredItems = useMemo(() => 
+      items.filter(item => item.active), [items]
+    );
+    
+    // Memoize callbacks to prevent child re-renders
+    const handleClick = useCallback((id: string) => 
+      onFilter(id), [onFilter]
+    );
+    
+    return <ItemList items={filteredItems} onClick={handleClick} />;
+  };
+  ```
+
+### Code Splitting & Lazy Loading
+- **Use dynamic imports for large components**: Split code at the component level.
+  ```typescript
+  import { lazy, Suspense } from 'react';
+  
+  const HeavyComponent = lazy(() => import('./HeavyComponent'));
+  
+  export function App() {
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <HeavyComponent />
+      </Suspense>
+    );
+  }
+  ```
+
+- **Route-level code splitting**: Use Next.js automatic code splitting effectively.
+  ```typescript
+  // apps/web/src/app/dashboard/analytics/page.tsx
+  // This automatically creates a separate bundle
+  export default function AnalyticsPage() {
+    return <AnalyticsDashboard />;
+  }
+  ```
+
+### Image and Asset Optimization
+- **Use Next.js Image component**: Always use the optimized Image component.
+  ```typescript
+  import Image from 'next/image';
+  
+  // ✅ Optimized with automatic lazy loading
+  <Image
+    src="/hero-image.jpg"
+    alt="Hero image"
+    width={800}
+    height={600}
+    priority // Only for above-the-fold images
+  />
+  ```
+
+## 3. tRPC Performance
+
+### Caching Strategies
+- **Implement query caching**: Use React Query's built-in caching with appropriate stale times.
+  ```typescript
+  // In tRPC client configuration
+  const trpc = createTRPCReact<AppRouter>();
+  
+  export function TRPCProvider({ children }: { children: React.ReactNode }) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 5 * 60 * 1000, // 5 minutes
+          cacheTime: 10 * 60 * 1000, // 10 minutes
+        },
+      },
+    });
+  
+    return (
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </trpc.Provider>
+    );
+  }
+  ```
+
+- **Use Redis for server-side caching**: Cache expensive computations and API responses.
+  ```typescript
+  // In tRPC procedures
+  export const expensiveQuery = publicProcedure
+    .input(z.object({ params: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const cacheKey = `expensive:${input.params}`;
+      
+      // Try cache first
+      const cached = await ctx.redis.get(cacheKey);
+      if (cached) return JSON.parse(cached);
+      
+      // Compute result
+      const result = await expensiveComputation(input.params);
+      
+      // Cache for 1 hour
+      await ctx.redis.setex(cacheKey, 3600, JSON.stringify(result));
+      
+      return result;
+    });
+  ```
+
+### Batching and Deduplication
+- **Enable automatic batching**: Configure tRPC to batch requests automatically.
+  ```typescript
+  import { httpBatchLink } from '@trpc/client';
+  
+  const trpcClient = createTRPCClient<AppRouter>({
+    links: [
+      httpBatchLink({
+        url: '/api/trpc',
+        maxBatchSize: 10,
+      }),
+    ],
+  });
+  ```
+
+## 4. Bundle Optimization
+
+### Import Optimization
+- **Use tree-shaking friendly imports**: Import only what you need from large libraries.
+  ```typescript
+  // ❌ Avoid - imports entire library
+  import _ from 'lodash';
+  
+  // ✅ Preferred - tree-shakable imports
+  import { debounce } from 'lodash-es';
+  // or
+  import debounce from 'lodash/debounce';
+  ```
+
+### Bundle Analysis
+- **Regular bundle analysis**: Monitor and optimize bundle sizes.
+  ```bash
+  # Add to package.json scripts
+  "analyze": "cross-env ANALYZE=true next build"
+  ```
+
+## 5. Monitoring and Metrics
+
+### Performance Monitoring
+- **Web Vitals tracking**: Monitor Core Web Vitals in production.
+  ```typescript
+  // apps/web/src/app/layout.tsx
+  import { Analytics } from '@vercel/analytics/react';
+  import { SpeedInsights } from '@vercel/speed-insights/next';
+  
+  export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+      <html>
+        <body>
+          {children}
+          <Analytics />
+          <SpeedInsights />
+        </body>
+      </html>
+    );
+  }
+  ```
+
+### Performance Budgets
+- **Set performance budgets**: Define and enforce performance thresholds.
+  ```javascript
+  // next.config.mjs
+  const nextConfig = {
+    experimental: {
+      bundlePagesRouterDependencies: true,
+    },
+    // Performance budgets
+    performance: {
+      maxAssetSize: 250000,
+      maxEntrypointSize: 250000,
+    },
+  };
+  ```
+
+## 6. Performance Testing
+
+### Load Testing
+- **Database query performance**: Test query performance under load.
+  ```typescript
+  // Example performance test
+  describe('Database Performance', () => {
+    it('should handle concurrent user queries efficiently', async () => {
+      const start = Date.now();
+      
+      await Promise.all(
+        Array.from({ length: 100 }, () => 
+          prisma.user.findMany({ take: 10 })
+        )
+      );
+      
+      const duration = Date.now() - start;
+      expect(duration).toBeLessThan(1000); // Should complete within 1s
+    });
+  });
+  ```
+
+By following these performance optimization patterns, we ensure the CodeWeaver application remains fast, responsive, and scalable as it grows.

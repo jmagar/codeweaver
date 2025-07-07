@@ -1,3 +1,7 @@
+---
+description: Outlines the high-level architectural patterns for the project, including the pnpm monorepo setup, a decoupled tRPC API layer, abstraction for external services like AI providers, a strong emphasis on end-to-end type safety, environment-driven configuration, a container-first approach with Docker, and the use of WebSockets for real-time communication.
+alwaysApply: false
+---
 # Rule: Architecture Patterns
 
 This document outlines the high-level architectural patterns for the CodeWeaver project. These patterns are chosen to ensure scalability, maintainability, and a clear separation of concerns.
@@ -14,7 +18,7 @@ The API logic is decoupled from the web server.
 
 ## 3. Provider Abstraction for External Services
 External services, particularly AI providers, are accessed through an abstraction layer.
-- The provider logic resides in `packages/lib/ai`.
+- The provider logic resides in `packages/lib/src/ai`.
 - This pattern uses a factory or strategy pattern to allow for easy swapping and addition of new providers without changing the core application logic.
 - **Guideline**: Never call an external AI provider's SDK or API directly from application code. Always go through the established provider abstraction layer.
 
@@ -34,6 +38,7 @@ All services are designed to be run in Docker containers.
 - `docker-compose.yml` orchestrates the development environment.
 - Production deployments will use container orchestration (Docker Compose or Kubernetes).
 - **Guideline**: When adding a new service (e.g., a new database, a message queue), it must be added to the Docker Compose setup.
+- Use `docker compose` instead of `docker-compose` for all commands.
 
 ## 7. Real-time Communication via WebSockets
 For real-time features like live chat updates, WebSockets are used.

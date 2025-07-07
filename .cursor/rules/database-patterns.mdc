@@ -1,0 +1,46 @@
+---
+description: Defines database schema, migration, and query patterns for the CodeWeaver project, including Prisma best practices, data modeling, and migration workflow.
+globs: ["packages/db/**", "packages/api/**"]
+alwaysApply: false
+---
+# Rule: Database Patterns
+
+This rule defines the database schema, migration, and query patterns for the CodeWeaver project. It ensures consistency, safety, and performance across all database interactions.
+
+## 1. Schema Design
+
+- **Single Source of Truth**: All schema changes must be made in `packages/db/prisma/schema.prisma`.
+- **Naming**: Use `PascalCase` for models, `camelCase` for fields, and plural table names are discouraged.
+- **Relations**: Always define explicit relations and referential actions (`onDelete`, `onUpdate`).
+- **Timestamps**: All models must include `createdAt` and `updatedAt` fields where appropriate.
+- **Soft Deletes**: Use a `deletedAt` field for soft deletion instead of removing records.
+
+## 2. Migrations
+
+- **Migration Workflow**: All schema changes must be applied via Prisma Migrate (`pnpm db:push` for dev, `prisma migrate deploy` for prod).
+- **Migration Files**: Never edit migration SQL files by hand; always use Prisma CLI.
+- **Review**: All migration PRs must be reviewed for data loss, downtime, and backward compatibility.
+
+## 3. Query Patterns
+
+- **Field Selection**: Always use `select` or `include` to limit fields in queries.
+- **Batching**: Use `findMany` with `in` filters to avoid N+1 queries.
+- **Transactions**: Use `prisma.$transaction` for multi-step operations that must succeed or fail together.
+- **Connection Pooling**: Use connection pooling in production (e.g., PgBouncer) and configure Prisma accordingly.
+
+## 4. Data Validation
+
+- **Zod Validation**: All API inputs must be validated with Zod before reaching the database.
+- **Unique Constraints**: Enforce uniqueness at both the Prisma schema and database level.
+
+## 5. Seeding & Test Data
+
+- **Seed Scripts**: Place all seed scripts in `packages/db/src/seed.ts`.
+- **Idempotency**: Seed scripts must be idempotent and safe to run multiple times.
+
+## 6. Vector & AI Data
+
+- **Embeddings**: Use the `pgvector` extension for vector fields. Store embeddings in a dedicated model (e.g., `DocumentEmbedding`).
+- **Indexing**: Always create an index on vector fields for efficient similarity search.
+
+By following these patterns, we ensure our database layer is robust, scalable, and easy to maintain.

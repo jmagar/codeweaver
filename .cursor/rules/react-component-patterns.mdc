@@ -1,0 +1,77 @@
+---
+description: Defines patterns and best practices for React component architecture, composition, and maintainability in the CodeWeaver project.
+globs: ["packages/ui/**/*.tsx", "apps/web/**/*.tsx"]
+alwaysApply: false
+---
+# Rule: React Component Patterns
+
+This rule defines the standards for React component design, composition, and maintainability across the CodeWeaver project.
+
+## 1. Component Structure
+
+- **Functional Components**: Use function components with hooks. Avoid class components unless absolutely necessary.
+- **Props Typing**: All props must be explicitly typed with TypeScript interfaces or types.
+- **TSDoc/JSDoc**: Every exported component must include a TSDoc/JSDoc block describing its purpose and props.
+
+## 2. Composition & Reusability
+
+- **Atomic Design**: Favor small, focused components (atoms, molecules, organisms) that can be composed into larger UIs.
+- **Children Prop**: Use the `children` prop for layout and container components.
+- **Hooks**: Extract reusable logic into custom hooks (`useXyz`).
+
+## 3. State & Side Effects
+
+- **Local State**: Use `useState` for local state, `useReducer` for complex state.
+- **Side Effects**: Use `useEffect` for side effects, and always clean up subscriptions/timers.
+- **Memoization**: Use `useMemo` and `useCallback` to optimize expensive calculations and prevent unnecessary re-renders.
+
+## 4. Styling
+
+- **TailwindCSS**: Use Tailwind utility classes for styling. For custom styles, use CSS modules or `@utility` directives as per the TailwindCSS 4 rule.
+- **Classnames**: Use the `clsx` or `classnames` library for conditional class logic.
+
+## 5. Accessibility
+
+- **Semantic HTML**: Use semantic elements (`button`, `nav`, `main`, etc.) and ARIA attributes as needed.
+- **Keyboard Navigation**: Ensure all interactive elements are keyboard accessible.
+- **Color Contrast**: Meet WCAG AA color contrast requirements.
+
+## 6. Testing
+
+- **Test IDs**: Add `data-testid` attributes to key elements for reliable test targeting.
+- **Component Tests**: Write tests for all components using React Testing Library or similar.
+
+## 7. Example
+
+```typescript
+/**
+ * @component
+ * Primary button for form actions.
+ * @param props.children - Button label or content.
+ * @param props.onClick - Click handler.
+ * @param props.disabled - Whether the button is disabled.
+ */
+export function PrimaryButton({
+  children,
+  onClick,
+  disabled = false,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      className="bg-primary text-white px-4 py-2 rounded"
+      onClick={onClick}
+      disabled={disabled}
+      data-testid="primary-button"
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+By following these patterns, we ensure our React codebase is modular, accessible, and easy to maintain.

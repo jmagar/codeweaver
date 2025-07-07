@@ -1,3 +1,7 @@
+---
+description: Defines the code style, formatting, and linting standards for the project, enforced by Prettier and ESLint.
+alwaysApply: false
+---
 # Rule: Code Style and Formatting
 
 This rule defines the code style, formatting, and linting standards for the CodeWeaver project. The goal is to maintain a consistent, clean, and error-free codebase. All code must be formatted with Prettier and pass ESLint checks before being committed.
@@ -18,7 +22,7 @@ The shared Prettier configuration is located in `tooling/prettier`. It is intent
 **Usage**: All developers should have the Prettier extension installed in their IDE to format on save. The command `pnpm format` can be run from the root to format the entire project.
 
 ## ESLint Configuration
-Shared ESLint configurations are located in `tooling/eslint`. Packages and apps extend the appropriate base configuration.
+The ESLint configuration is defined in the root `eslint.config.js` file. This single configuration applies to the entire monorepo.
 
 ### Key ESLint Rules
 1.  **Imports**:

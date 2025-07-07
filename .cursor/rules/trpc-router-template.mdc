@@ -1,0 +1,104 @@
+---
+description: A boilerplate for creating new tRPC routers. This ensures every new router has the correct structure, includes health checks, and follows our naming conventions.
+alwaysApply: false
+---
+# Rule: tRPC Router Template
+
+When creating a new tRPC router, use the following template. This ensures that every router adheres to the project's standards for structure, naming, validation, and error handling.
+
+## Template for a New tRPC Router
+
+Create new router files under `packages/api/src/routers/`. For example, a new router for handling "products" would be in `packages/api/src/routers/product.ts`.
+
+```typescript
+import { z } from "zod";
+import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
+
+// Example in-memory data store. Replace with your database logic (e.g., ctx.prisma.product)
+const products = [
+  { id: "1", name: "Laptop", stock: 10 },
+  { id: "2", name: "Keyboard", stock: 100 },
+];
+
+export const newFeatureRouter = createTRPCRouter({
+  /**
+   * Health check procedure. Useful for simple connectivity tests.
+   * Can be called from the client to ensure the router is mounted correctly.
+   */
+  healthCheck: publicProcedure.query(() => {
+    return "ok";
+  }),
+
+  /**
+   * Example Query: Fetch all items.
+   * This procedure is public and does not require authentication.
+   */
+  list: publicProcedure.query(async ({ ctx }) => {
+    // In a real app, you would fetch from a database:
+    // return ctx.prisma.product.findMany();
+    return products;
+  }),
+
+  /**
+   * Example Query with Input Validation: Fetch a single item by its ID.
+   * Zod is used to validate the input at runtime.
+   */
+  byId: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      // const product = await ctx.prisma.product.findUnique({ where: { id: input.id } });
+      const product = products.find((p) => p.id === input.id);
+
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Product with ID '${input.id}' not found.`,
+        });
+      }
+      return product;
+    }),
+
+  /**
+   * Example Mutation: Create a new item.
+   * This procedure uses a protectedProcedure, meaning it requires the user to be authenticated.
+   * It also uses Zod to validate the input object.
+   */
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(3, "Name must be at least 3 characters long."),
+        stock: z.number().int().min(0),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // In a real app, you would interact with your database here.
+      // The `ctx.session.user` object is available because this is a protected procedure.
+      // console.log(`User ${ctx.session.user.id} is creating a product.`);
+      
+      const newProduct = {
+        id: (Math.random() + 1).toString(36).substring(7),
+        ...input,
+      };
+      products.push(newProduct);
+      return newProduct;
+    }),
+});
+
+// Make sure to merge this new router into the root router in `packages/api/src/root.ts`
+//
+// export const appRouter = createTRPCRouter({
+//   ...
+//   newFeature: newFeatureRouter,
+//   ...
+// });
+```
+
+## Key Guidelines
+
+1.  **File Location**: Place new router files in `packages/api/src/routers/`.
+2.  **Naming**: Name the exported router `featureNameRouter` (e.g., `productRouter`).
+3.  **Validation**: **Always** use `zod` to define and validate the `input` for all procedures that accept arguments. This is critical for type safety and runtime security.
+4.  **Authorization**: Use `publicProcedure` for endpoints that are open to everyone. Use `protectedProcedure` for endpoints that require an authenticated user session.
+5.  **Error Handling**: Throw `TRPCError` for expected errors like "Not Found" or "Unauthorized" to send structured errors to the client.
+6.  **Root Router**: After creating a new router file, you **must** import it into `packages/api/src/root.ts` and merge it into the main `appRouter`.

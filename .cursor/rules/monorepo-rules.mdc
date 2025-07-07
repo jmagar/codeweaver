@@ -1,3 +1,7 @@
+---
+description: Outlines guidelines for managing the pnpm monorepo, including dependency management, running scripts, creating new packages, and using TypeScript project references.
+alwaysApply: false
+---
 # Rule: Monorepo Management
 
 This rule outlines the specific guidelines for managing the `pnpm` monorepo, including dependency management, package scripts, and inter-package dependencies.

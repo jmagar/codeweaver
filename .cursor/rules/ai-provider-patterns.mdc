@@ -1,9 +1,14 @@
+---
+description: Defines the patterns for integrating with and managing AI providers and the Model Context Protocol (MCP).
+globs: ["packages/lib/src/ai/**", "packages/lib/src/mcp/**"]
+alwaysApply: false
+---
 # Rule: AI Provider and Integration Patterns
 
 This rule defines the patterns for integrating with and managing AI providers (e.g., OpenRouter, Claude, Gemini) and the Model Context Protocol (MCP).
 
 ## 1. Provider Abstraction Layer
-All interactions with external AI models **must** go through the central provider abstraction layer located in `packages/lib/ai`. Direct API calls to a provider from application logic are strictly forbidden.
+All interactions with external AI models **must** go through the central provider abstraction layer located in `packages/lib/src/ai`. Direct API calls to a provider from application logic are strictly forbidden.
 
 ### Core `AIProvider` Interface
 All provider implementations must adhere to a common interface to ensure they are interchangeable.
@@ -19,7 +24,7 @@ interface AIProvider {
 ```
 
 - **Implementation**: A factory or strategy pattern should be used to instantiate the correct provider based on configuration.
-- **Location**: `packages/lib/ai/providers/`.
+- **Location**: `packages/lib/src/ai/providers/`.
 
 ## 2. AI SDK v5 Usage
 The [Vercel AI SDK v5](https://sdk.vercel.ai/docs) is the primary tool for managing interactions with LLMs.
@@ -29,7 +34,7 @@ The [Vercel AI SDK v5](https://sdk.vercel.ai/docs) is the primary tool for manag
 
 ## 3. Model Context Protocol (MCP) Integration
 MCP is used to extend the AI's capabilities with external tools and data.
-- **MCP Client**: The client for connecting to MCP servers is managed in `packages/lib/mcp`.
+- **MCP Client**: The client for connecting to MCP servers is managed in `packages/lib/src/mcp`.
 - **Tool Execution**: Calling an MCP tool should be handled through the tRPC API (e.g., `trpc.mcp.callTool.mutate(...)`) to ensure proper permissions and context are applied.
 - **Dynamic Tools**: The application should be able to dynamically list and present available MCP tools to the user or the AI agent.
 

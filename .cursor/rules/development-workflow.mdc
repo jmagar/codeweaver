@@ -1,3 +1,7 @@
+---
+description: Outlines the standard development workflow, from local setup and branching to making changes, committing, and creating pull requests.
+alwaysApply: false
+---
 # Rule: Development Workflow
 
 This document outlines the standard development workflow for contributing to the CodeWeaver project. Following this workflow ensures consistency, quality, and smooth collaboration.
@@ -15,7 +19,7 @@ This document outlines the standard development workflow for contributing to the
     ```
 3.  **Start Infrastructure**: Use Docker Compose to start the database (PostgreSQL) and cache (Redis).
     ```bash
-    docker-compose up -d
+    docker compose up -d
     ```
 4.  **Install Dependencies**: Use `pnpm` to install all dependencies for the entire monorepo.
     ```bash
@@ -25,7 +29,7 @@ This document outlines the standard development workflow for contributing to the
     ```bash
     pnpm db:push
     ```
-6.  **Start Development Servers**: Use the root `dev` script, which leverages Turborepo to run all `dev` scripts in the `apps/*` packages.
+6.  **Start Development Servers**: Use the root `dev` script to run all `dev` scripts in the `apps/*` packages.
     ```bash
     pnpm dev
     ```

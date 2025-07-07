@@ -1,0 +1,122 @@
+---
+description: Defines best practices and patterns for using the Vercel AI SDK v5 (Beta) in the CodeWeaver project, including multi-modal content, tool usage, and agentic workflows.
+globs: ["packages/lib/src/ai/**", "packages/api/**", "apps/web/src/components/ai/**"]
+alwaysApply: false
+---
+
+# Rule: AI SDK v5 Patterns
+
+This rule defines the standards for integrating and using the Vercel AI SDK v5 (Beta) in the CodeWeaver project, updated for the 5.0 Beta release.
+
+## 1. Beta Version Guidance
+
+- Use AI SDK 5 Beta for new projects, experimentation, and migration planning.
+- Pin to specific beta versions; minor releases may introduce breaking changes.
+- Avoid full production migration until stable release; use beta for dev/testing.
+
+## 2. Core Architecture & Protocol
+
+- **LanguageModelV2**: All LLM outputs are content parts in a unified array (text, images, reasoning, sources, tool calls, etc.).
+- **Content-First Design**: Treat all outputs as ordered content parts for extensibility and type safety.
+- **Improved Type Safety**: Stronger TypeScript guarantees for all content types and tool calls.
+
+## 3. Message System
+
+- **UIMessage**: Stores full conversation history for the UI, including all parts, metadata, and UI state.
+- **ModelMessage**: Optimized for sending to LLMs (strips UI metadata, only relevant content).
+- **Explicit Conversion**: Always convert UIMessage[] to ModelMessage[] before sending to the model.
+  ```typescript
+  import { convertToModelMessages, streamText, UIMessage } from 'ai';
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages: convertToModelMessages(messages),
+  });
+  return result.toUIMessageStreamResponse();
+  ```
+- **Type-safe Tool Calls**: Tool parts use `tool-${toolName}` for type safety and easier UI handling.
+
+## 4. Metadata & Data Parts
+
+- **Message Metadata**: Attach structured, type-safe metadata to messages (e.g., duration, model, token usage).
+  ```typescript
+  export const exampleMetadataSchema = z.object({
+    duration: z.number().optional(),
+    model: z.string().optional(),
+    totalTokens: z.number().optional(),
+  });
+  ```
+  Use `toUIMessageStreamResponse({ messageMetadata })` to add metadata during streaming.
+- **Data Parts**: Stream arbitrary, type-safe data parts (e.g., RAG sources, tool results) from server to client, maintaining order in `message.parts`.
+
+## 5. Streaming & UI Integration
+
+- **UIMessageStream**: Use the new stream writer to stream any content part (text, tool, data, source) to the client.
+- **SSE Protocol**: All streaming uses Server-Sent Events (SSE) for reliability and browser compatibility.
+- **Enhanced useChat**: Configure chat state and API endpoints via transport objects (e.g., `DefaultChatTransport`).
+
+## 6. Tooling Patterns
+
+- **Tool Definition**: Use the `tool()` helper with Zod schemas for input/output, and type-safe execution.
+  ```typescript
+  import { tool } from "ai";
+  import { z } from "zod";
+  const weatherTool = tool({
+    description: 'Get weather information',
+    inputSchema: z.object({ city: z.string() }),
+    outputSchema: z.object({ temperature: z.number(), conditions: z.string() }),
+    execute: async ({ city }) => ({ temperature: 72, conditions: 'sunny' }),
+  });
+  ```
+- **Tool Type Inference**: Use `InferToolInput`, `InferToolOutput`, and `InferUITool` for type-safe tool usage in UI and server code.
+- **Provider-Executed Tools**: Use built-in OpenAI tools (e.g., `fileSearch`, `webSearchPreview`) and let the provider manage tool execution/results.
+
+## 7. Agentic Control
+
+- **prepareStep**: Use `experimental_prepareStep` to control model/tool selection and step context in multi-step agents.
+- **stopWhen**: Use `stopWhen` to define agent stopping conditions (step count, tool call, custom logic).
+
+## 8. Migration Guidance
+
+- Migrate from v4 by updating message formats, using the new transport-based `useChat`, and adopting SSE streaming.
+- Always use `UIMessage` for UI state, convert to `ModelMessage` for LLM calls.
+- Review the official migration guide for step-by-step instructions.
+
+## 9. Example Patterns
+
+### Streaming Chat
+```typescript
+const stream = await aiProvider.stream({
+  model: "claude-3-opus",
+  messages: convertToModelMessages(messages),
+  tools: [myTool],
+  stopWhen: ...,
+});
+```
+
+### Tool Definition
+```typescript
+import { tool } from "ai";
+import { z } from "zod";
+const myTool = tool({
+  name: "getWeather",
+  description: "Get the current weather for a city.",
+  inputSchema: z.object({ city: z.string() }),
+  outputSchema: z.object({ temperature: z.number(), condition: z.string() }),
+  execute: async ({ city }) => { ... }
+});
+```
+
+### useChat with Transport
+```typescript
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+const { messages, sendMessage } = useChat({
+  transport: new DefaultChatTransport({
+    api: '/api/chat',
+    headers: { 'Custom-Header': 'value' },
+  }),
+  maxSteps: 5,
+});
+```
+
+By following these updated patterns, you ensure robust, extensible, and type-safe AI integrations using the Vercel AI SDK v5 Beta, leveraging all new features and architectural improvements.
