@@ -5,6 +5,20 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "devDependencies": {
+    "@codeweaver/tsconfig": "workspace:*",
+    "@types/node": "^20.11.19",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@opentelemetry/sdk-node": "^0.48.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.48.0",
+    "@opentelemetry/exporter-prometheus": "^0.48.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.48.0",
+    "@opentelemetry/resources": "^1.22.0",
+    "@opentelemetry/semantic-conventions": "^1.22.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -p . --noEmit",
+    "build": "tsc -p ."
   }
 } 

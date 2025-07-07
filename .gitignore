@@ -40,3 +40,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Turbo
+.turbo
+
+# Build outputs
+dist/
+.next/
+/out/
+build
+.svelte-kit
+.vercel
+/public/build
+/build
+/dist
+/coverage
+/.svelte-kit
+/.vercel
+/node_modules
+/.pnpm-store

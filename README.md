@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CodeWeaver: AI-Assisted Development Environment
 
 CodeWeaver is a next-generation, AI-assisted development environment designed for modern engineering teams. It provides a seamless, multi-modal, and agentic coding experience by integrating multiple cutting-edge AI providers, a robust real-time API layer, and a scalable, containerized infrastructure.
@@ -183,3 +184,6 @@ Contributions are welcome! Please follow these steps:
 ---
 
 Built with ❤️ and the future of AI.
+=======
+# codeweaver
+>>>>>>> 15f2f157e1212d435dc39cbe92cdbbc486d36262

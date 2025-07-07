@@ -13,7 +13,15 @@
     "moduleResolution": "node",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@codeweaver/api/*": ["packages/api/src/*"],
+      "@codeweaver/db/*": ["packages/db/src/*"],
+      "@codeweaver/lib/*": ["packages/lib/src/*"],
+      "@codeweaver/ui/*": ["packages/ui/src/*"],
+      "@codeweaver/tsconfig/*": ["tooling/tsconfig/*"]
+    }
   },
   "files": [],
   "include": [],
