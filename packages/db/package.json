@@ -7,7 +7,9 @@
   "scripts": {
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "typecheck": "tsc -p . --noEmit",
+    "postinstall": "pnpm db:generate"
   },
   "dependencies": {
     "@prisma/client": "^5.14.0"

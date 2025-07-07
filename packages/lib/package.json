@@ -16,5 +16,9 @@
     "@opentelemetry/auto-instrumentations-node": "^0.48.0",
     "@opentelemetry/resources": "^1.22.0",
     "@opentelemetry/semantic-conventions": "^1.22.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -p . --noEmit",
+    "build": "tsc -p ."
   }
 } 
