@@ -5,7 +5,7 @@ import { db } from "@codeweaver/db";
  * Extend this once authentication and other services are in place.
  */
 export async function createTRPCContext() {
-  // TODO: pull the session from cookies / headers once NextAuth is wired up
+  // TODO: integrate real session when auth is implemented.
   const session = null;
 
   return {
