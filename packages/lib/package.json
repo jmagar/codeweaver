@@ -2,8 +2,11 @@
   "name": "@codeweaver/lib",
   "version": "1.0.0",
   "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@codeweaver/tsconfig": "workspace:*",
     "@types/node": "^24.0.10",
@@ -18,7 +21,8 @@
     "@opentelemetry/semantic-conventions": "^1.34.0"
   },
   "scripts": {
-    "typecheck": "tsc -p . --noEmit",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc -p . --noEmit"
   }
 } 

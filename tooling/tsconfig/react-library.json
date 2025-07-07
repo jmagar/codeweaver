@@ -3,6 +3,7 @@
   "display": "React Library",
   "extends": "./base.json",
   "compilerOptions": {
+    "outDir": "dist",
     "jsx": "react-jsx",
     "lib": ["es2022", "dom", "dom.iterable"],
     "target": "es2022"
