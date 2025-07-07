@@ -1,0 +1,5 @@
+
+
+> @codeweaver/lib@1.0.0 typecheck /workspace/packages/lib
+> tsc -p . --noEmit
+

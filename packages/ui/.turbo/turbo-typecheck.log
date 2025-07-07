@@ -1,0 +1,5 @@
+
+
+> @codeweaver/ui@1.0.0 typecheck /workspace/packages/ui
+> tsc -p . --noEmit
+

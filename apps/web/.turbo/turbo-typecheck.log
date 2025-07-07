@@ -1,0 +1,5 @@
+
+
+> web@1.0.0 typecheck /workspace/apps/web
+> tsc -p . --noEmit
+
