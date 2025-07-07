@@ -5,21 +5,24 @@
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --border: 214.3 31.8% 91.4%;
+    --primary: 221.2 83.2% 53.3%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
+    --primary: 217.2 91.2% 59.8%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 
@@ -31,12 +34,16 @@
   
   /* Gradient text effect */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/50;
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.5));
   }
   
   /* Glass morphism effect */
   .glass {
-    @apply bg-background/80 backdrop-blur-md border border-border/50;
+    background-color: hsl(var(--background) / 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--border) / 0.5);
   }
   
   /* Modern shadow with color */
