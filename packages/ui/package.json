@@ -15,7 +15,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p . --noEmit",
-    "build": "tsc -p .",
+    "build": "tsc -p . --outDir dist",
     "clean": "rm -rf dist"
   }
 } 
