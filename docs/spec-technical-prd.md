@@ -138,6 +138,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   conversations Conversation[]
+  projects      Project[]
+  messages      Message[]
 }
 
 model VerificationToken {
@@ -148,6 +150,31 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files        File[]
+  conversations Conversation[]
+}
+
+model File {
+  id        String   @id @default(cuid())
+  name      String
+  path      String
+  content   String   @db.Text
+  projectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
 model Conversation {
   id        String    @id @default(cuid())
   userId    String
@@ -156,15 +183,20 @@ model Conversation {
   updatedAt DateTime  @updatedAt
   user      User      @relation(fields: [userId], references: [id])
   messages  Message[]
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  provider  String // e.g., "CLAUDE", "GEMINI"
 }
 
 model Message {
   id             String       @id @default(cuid())
   conversationId String
   role           String       // "user", "assistant", "system"
-  content        Json         // AI SDK v5 UIMessagePart structure
+  content        String       @db.Text
   createdAt      DateTime     @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id])
+  userId         String?
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model DocumentEmbedding {

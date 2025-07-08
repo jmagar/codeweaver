@@ -79,9 +79,56 @@ function UserProfile({ userId }: { userId: string }) {
 }
 ```
 
-## 3. Endpoint Design Process
+## 3. Creating a New Router
 
-- **Identify the Domain**: Determine which router the new endpoint belongs to (e.g., `user`, `chat`, `project`). If a new domain is needed, create a new router file in `packages/api/src/routers/`.
+While adding procedures to existing routers is common, you'll often need to create new routers to handle distinct domains of your application (e.g., `project`, `billing`, etc.).
+
+### Step 1: Create the Router File
+Create a new file in `packages/api/src/routers/`. For example, `project.ts`.
+
+### Step 2: Define and Export the Router
+Inside `project.ts`, define your new router using `createTRPCRouter` and add your procedures.
+
+```typescript
+// packages/api/src/routers/project.ts
+import { publicProcedure, createTRPCRouter } from '../trpc';
+import { z } from 'zod';
+
+export const projectRouter = createTRPCRouter({
+  getById: publicProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(({ input }) => {
+      // Your logic here
+      return { id: input.projectId, name: 'My Project' };
+    }),
+});
+```
+
+### Step 3: Merge into the Root Router
+The final step is to merge your new router into the main `appRouter`.
+
+Open `packages/api/src/root.ts` and add your new router to the `createTRPCRouter` call.
+
+```typescript
+// packages/api/src/root.ts
+import { userRouter } from './routers/user';
+import { healthRouter } from './routers/health';
+import { projectRouter } from './routers/project'; // 1. Import it
+import { createTRPCRouter } from './trpc';
+
+export const appRouter = createTRPCRouter({
+  user: userRouter,
+  health: healthRouter,
+  project: projectRouter, // 2. Add it here
+});
+
+export type AppRouter = typeof appRouter;
+```
+Once merged, the new `project` procedures will be available on the client just like any other.
+
+## 4. Endpoint Design Process
+
+- **Identify the Domain**: Determine which router the new endpoint belongs to (e.g., `user`, `chat`, `project`). If a new domain is needed, follow the steps above to create a new router file.
 - **Choose the Procedure Type**:
     - `query`: For read-only operations (fetching data).
     - `mutation`: For write operations (creating, updating, deleting data).
@@ -90,7 +137,7 @@ function UserProfile({ userId }: { userId: string }) {
 - **Define Logic**: Implement the core logic, utilizing the `ctx` object to access the database, session info, etc.
 - **Define Outputs**: While tRPC infers output types, ensure your function returns a consistent and predictable shape. For complex objects, you can define an explicit Zod output schema for clarity.
 
-## 4. Schema Patterns for a Chat Application
+## 5. Schema Patterns for a Chat Application
 
 ### User and Session Management
 - **`auth.getSession` (Query)**: Fetches the current user's session. No input required.
@@ -109,7 +156,7 @@ function UserProfile({ userId }: { userId: string }) {
   - **Input**: `{ conversationId: string }`.
   - **Output**: A stream of message chunks or status updates.
 
-## 5. AI Provider Integration Patterns
+## 6. AI Provider Integration Patterns
 
 - **Centralized Access**: All tRPC procedures that interact with AI models **must** go through the `AIProvider` abstraction layer in `packages/lib/ai`.
 - **Context is Key**: The `ctx` object in tRPC is the perfect place to instantiate and provide the `AIProvider` to your procedures.
@@ -152,7 +199,7 @@ export const chatRouter = createTRPCRouter({
 });
 ```
 
-## 6. Testing Strategies
+## 7. Testing Strategies
 
 - **Unit Testing Routers**: Test individual tRPC routers in isolation. You can mock the `ctx` object to provide a fake database client and session.
 - **Integration Testing**: Write tests that call the tRPC server and assert the responses, including database side-effects. Use a separate test database.

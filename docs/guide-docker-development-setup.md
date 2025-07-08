@@ -19,7 +19,7 @@ The core of our development setup is the `docker-compose.yml` file located at th
 ```yaml
 services:
   # PostgreSQL database with pgvector extension
-  postgres:
+  codeweaver-db:
     image: pgvector/pgvector:pg15
     restart: always
     environment:
@@ -27,23 +27,21 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: codeweaver_dev
     ports:
-      - '5432:5432'
+      - '9001:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - codeweaver-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d codeweaver_dev"]
       interval: 10s
-      timeout: 5s
-      retries: 5
 
   # Redis cache and message broker
-  redis:
+  codeweaver-redis:
     image: redis:7-alpine
     restart: always
     ports:
-      - '6379:6379'
+      - '9002:6379'
     volumes:
-      - redis_data:/data
+      - codeweaver-redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -51,15 +49,15 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
-  redis_data:
+  codeweaver-db-data:
+  codeweaver-redis-data:
 ```
 
 ### 3.1. Services Explained
 
-- **`postgres`**: Runs a PostgreSQL 15 database instance using the `pgvector` image, which is required for our AI embedding features. It exposes the database on port `5432`.
-- **`redis`**: Runs a Redis 7 instance for caching, session management, and real-time messaging. It exposes Redis on port `6379`.
-- **`volumes`**: `postgres_data` and `redis_data` are named volumes. Docker manages these volumes to persist our database and cache data across container restarts. This means your data won't be lost when you stop and start the services.
+- **`codeweaver-db`**: Runs a PostgreSQL 15 database instance using the `pgvector` image, which is required for our AI embedding features. It exposes the database on port `9001`.
+- **`codeweaver-redis`**: Runs a Redis 7 instance for caching, session management, and real-time messaging. It exposes Redis on port `9002`.
+- **`volumes`**: `codeweaver-db-data` and `codeweaver-redis-data` are named volumes. Docker manages these volumes to persist our database and cache data across container restarts. This means your data won't be lost when you stop and start the services.
 
 ## 4. Setting Up and Running the Environment
 
@@ -77,7 +75,7 @@ You can check the status of your running containers with:
 ```bash
 docker compose ps
 ```
-You should see both the `postgres` and `redis` services listed with a `State` of `Up`.
+You should see both the `codeweaver-db` and `codeweaver-redis` services listed with a `State` of `Up`.
 
 ### Step 4.3: Connect Your Application
 Your Next.js application (running locally via `pnpm dev`) is pre-configured via the `.env.development` file to connect to these Docker services on `localhost` at their respective ports.
@@ -103,9 +101,9 @@ To view the logs from all running services in real-time:
 ```bash
 docker compose logs -f
 ```
-To view logs for a specific service (e.g., `postgres`):
+To view logs for a specific service (e.g., `codeweaver-db`):
 ```bash
-docker compose logs -f postgres
+docker compose logs -f codeweaver-db
 ```
 
 ## 6. Database Seeding and Management
@@ -116,7 +114,6 @@ docker compose logs -f postgres
   ```
 - **Prisma Studio**: You can connect to the database running in Docker using Prisma Studio.
   ```bash
-s
   pnpm db:studio
   ```
   This will open a web interface where you can view and manage your database tables.

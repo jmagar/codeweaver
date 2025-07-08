@@ -21,6 +21,7 @@ This file provides a high-level summary of the rules defined in the `.cursor/rul
 - **Commits**: Use [Conventional Commits](https://www.conventionalcommits.org/) for clear and standardized commit messages.
 - **Local Checks**: Always run `pnpm lint`, `pnpm typecheck` before pushing changes.
 - **Task Management**: For new features or significant tasks, use the "Bivvy" (@.cursor/rules/bivvy.mdc) process to define a PRD and a task list ("Moves").
+- **Roadmap Maintenance**: Keep `docs/spec-implementation-roadmap.md` up-to-date. Review and update it after completing any roadmap task, starting a new phase, or before merging a major feature.
 
 #### 3. Code & Style (@.cursor/rules/code-style.mdc, @.cursor/rules/naming-conventions.mdc, @.cursor/rules/react-component-patterns.mdc)
 - **Linting & Formatting**: Enforced by ESLint and Prettier. Run `pnpm format` and `pnpm lint` before committing.
@@ -42,6 +43,7 @@ This file provides a high-level summary of the rules defined in the `.cursor/rul
 #### 5. External Services & AI (@.cursor/rules/ai-provider-patterns.mdc, @.cursor/rules/ai-sdk-v5.mdc)
 - **Abstraction**: Access external AI services through the provider abstraction layer in `packages/lib/src/ai`.
 - **UI/UX**: Use the Vercel AI SDK v5 for building AI interfaces, including multi-modal content and tool usage.
+- **MCP Configuration**: Configure external tools and services via a central `mcp-config.json` file, allowing for dynamic management of MCP servers without code changes.
 
 #### 6. UI Components (@.cursor/rules/shadcn-ui-patterns.mdc)
 - **Adding Components**: Use `pnpm dlx shadcn@latest add <component-name>` from within the `packages/ui` directory.

@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "claude-desktop": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": [
+        "claude-desktop"
+      ],
+      "cwd": "~/.claude-desktop",
+      "stderr": "inherit"
+    },
+    "cursor-agent": {
+      "transport": "stdio",
+      "command": "/Applications/Cursor.app/Contents/MacOS/Cursor",
+      "args": [
+        "--agent"
+      ]
+    },
+    "open-interpreter": {
+      "transport": "http",
+      "url": "http://localhost:8080/v1/mcp"
+    },
+    "remote-tool-server": {
+      "transport": "sse",
+      "url": "https://example.com/api/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer ${SECRET_TOKEN}"
+      }
+    }
+  },
+  "default": "claude-desktop"
+} 

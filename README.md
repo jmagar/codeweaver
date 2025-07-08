@@ -53,10 +53,10 @@ Update `.env.development` with your local configuration:
 
 ```env
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/codeweaver_dev"
+DATABASE_URL="postgresql://user:password@localhost:9001/codeweaver_dev"
 
 # Redis
-REDIS_URL="redis://localhost:6379"
+REDIS_URL="redis://localhost:9002"
 
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
@@ -123,13 +123,16 @@ The project is a `pnpm` monorepo with the following structure:
 ```
 codeweaver/
 ├── apps/
-│   ├── web/                 # Next.js 15 frontend application
-│   └── docs/                # Documentation site
+│   └── web/                 # Next.js 15 frontend application
 ├── packages/
 │   ├── api/                 # Shared tRPC router and API logic
 │   ├── ui/                  # Shared React components (e.g., Shadcn UI)
 │   ├── db/                  # Prisma schema and database client
 │   └── lib/                 # Shared utilities and libraries
+│       └── src/
+│           ├── ai/          # AI provider abstractions and integrations
+│           ├── mcp/         # Model Context Protocol (MCP) client logic
+│           └── utils/       # General-purpose shared utilities
 ├── .env.example             # Example environment variables
 ├── docker-compose.yml       # Docker Compose for infrastructure
 ├── package.json             # Root package.json

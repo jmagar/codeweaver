@@ -19,29 +19,98 @@ This rule defines the standards for React component design, composition, and mai
 - **Children Prop**: Use the `children` prop for layout and container components.
 - **Hooks**: Extract reusable logic into custom hooks (`useXyz`).
 
-## 3. State & Side Effects
+## 3. State, Logic, and Side Effects
 
-- **Local State**: Use `useState` for local state, `useReducer` for complex state.
-- **Side Effects**: Use `useEffect` for side effects, and always clean up subscriptions/timers.
-- **Memoization**: Use `useMemo` and `useCallback` to optimize expensive calculations and prevent unnecessary re-renders.
+### State Management (`useState`, `useReducer`)
 
-## 4. Styling
+- **Functional Updates**: When new state depends on the previous state, always use the functional update form of a `useState` setter to prevent issues with stale state.
+  ```tsx
+  // Good
+  setCount(prevCount => prevCount + 1);
+
+  // Avoid
+  setCount(count + 1);
+  ```
+- **Keep State Minimal**: Avoid storing redundant information in state. If a value can be derived from props or other state variables during render, calculate it on the fly rather than storing it in state.
+- **Group Related State**: If you have multiple state variables that always change together, consider grouping them into a single state object or using `useReducer` for more complex state logic.
+
+### Side Effects (`useEffect`)
+
+- **Dependency Array**: Always provide a dependency array to `useEffect`. The `eslint-plugin-react-hooks` package helps enforce this.
+- **Cleanup**: Return a cleanup function from `useEffect` to cancel subscriptions, timers, or any other resources to prevent memory leaks.
+- **Separate Concerns**: Use multiple `useEffect` hooks to separate unrelated logic. For example, one for data fetching and another for event listeners.
+
+### Performance Optimization (`useMemo`, `useCallback`)
+
+- **Memoize Expensive Calculations**: Use `useMemo` to cache the result of expensive calculations between renders. Do not overuse it for simple calculations, as it adds unnecessary complexity.
+- **Memoize Callbacks**: Use `useCallback` to memoize functions that are passed down to optimized child components (wrapped in `React.memo`). This is crucial for preventing unnecessary re-renders of child components.
+
+### Context (`useContext`)
+
+When using the Context API to avoid prop-drilling, it is critical to memoize the context value to prevent consumers from re-rendering every time the provider's parent re-renders.
+
+```tsx
+// Provider Component
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('dark');
+
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({ theme, setTheme }), [theme]);
+
+  return (
+    <ThemeContext.Provider value={contextValue}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+```
+
+## 4. Custom Hooks
+
+For any reusable, stateful, or side-effect-ful logic, encapsulate it within a custom hook. This improves code reuse, separation of concerns, and testability.
+
+- **Naming**: Custom hooks must start with the word `use` (e.g., `useToggle`, `useWindowSize`).
+- **Composability**: Custom hooks can and should use other hooks (both built-in and other custom hooks).
+
+### Example: `useToggle`
+
+```typescript
+import { useState, useCallback } from 'react';
+
+/**
+ * @hook
+ * A custom hook to manage a boolean toggle state.
+ * @param {boolean} [initialState=false] - The initial state of the toggle.
+ * @returns {[boolean, () => void]} A tuple containing the current state and a function to toggle it.
+ */
+export const useToggle = (initialState: boolean = false): [boolean, () => void] => {
+  const [state, setState] = useState<boolean>(initialState);
+
+  const toggle = useCallback(() => {
+    setState(prevState => !prevState);
+  }, []);
+
+  return [state, toggle];
+};
+```
+
+## 5. Styling
 
 - **TailwindCSS**: Use Tailwind utility classes for styling. For custom styles, use CSS modules or `@utility` directives as per the TailwindCSS 4 rule.
 - **Classnames**: Use the `clsx` or `classnames` library for conditional class logic.
 
-## 5. Accessibility
+## 6. Accessibility
 
 - **Semantic HTML**: Use semantic elements (`button`, `nav`, `main`, etc.) and ARIA attributes as needed.
 - **Keyboard Navigation**: Ensure all interactive elements are keyboard accessible.
 - **Color Contrast**: Meet WCAG AA color contrast requirements.
 
-## 6. Testing
+## 7. Testing
 
 - **Test IDs**: Add `data-testid` attributes to key elements for reliable test targeting.
 - **Component Tests**: Write tests for all components using React Testing Library or similar.
 
-## 7. Example
+## 8. Example
 
 ```typescript
 /**

@@ -3,6 +3,10 @@
 **Version:** 1.0  
 **Date:** July 7, 2025
 
+**Status:** Future Implementation
+
+> This document serves as a blueprint for a planned feature. The steps outlined below have not yet been implemented.
+
 ## 1. Overview
 
 This document provides a blueprint for configuring the CodeWeaver Next.js application as a Progressive Web App (PWA). This will enable offline capabilities, allow users to "install" the app on their devices, and improve overall performance and user engagement. We will use the `next-pwa` library for a robust and straightforward implementation.

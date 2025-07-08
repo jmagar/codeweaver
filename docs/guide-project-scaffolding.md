@@ -88,37 +88,52 @@ touch .env.example
 ```
 **`docker-compose.yml` contents:**
 ```yaml
-version: '3.9'
 services:
-  postgres:
+  # PostgreSQL database with pgvector extension
+  codeweaver-db:
     image: pgvector/pgvector:pg15
+    container_name: codeweaver-db
     restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: codeweaver_dev
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - '5432:5432'
+      - '9001:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-  redis:
+      - codeweaver-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis cache and message broker
+  codeweaver-redis:
     image: redis:7-alpine
+    container_name: codeweaver-redis
     restart: always
     ports:
-      - '6379:6379'
+      - '9002:6379'
     volumes:
-      - redis_data:/data
+      - codeweaver-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
-  postgres_data:
-  redis_data:
+  codeweaver-db-data:
+  codeweaver-redis-data:
 ```
 
 **`.env.example` contents:**
 ```env
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/codeweaver_dev"
+DATABASE_URL="postgresql://user:password@localhost:9001/codeweaver_dev"
 # Redis
-REDIS_URL="redis://localhost:6379"
+REDIS_URL="redis://localhost:9002"
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET=""
