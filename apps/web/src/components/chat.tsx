@@ -1,10 +1,27 @@
 'use client';
 
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
+import { trpc } from '@/utils/trpc';
 
 export function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    api: '/api/trpc/chat.sendMessage',
+  const { messages, input, handleInputChange, handleSubmit, setMessages } =
+    useChat({
+      async onFinish(message) {
+        // TBD
+      },
+    });
+
+  const chatMutation = trpc.chat.sendMessage.useMutation({
+    onSuccess: (data) => {
+      setMessages([
+        ...messages,
+        {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: data.content,
+        },
+      ]);
+    },
   });
 
   return (
@@ -16,7 +33,21 @@ export function Chat() {
         </div>
       ))}
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          const newMessages = [
+            ...messages,
+            {
+              id: Date.now().toString(),
+              role: 'user',
+              content: input,
+            },
+          ];
+          setMessages(newMessages);
+          chatMutation.mutate({ messages: newMessages });
+        }}
+      >
         <input
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
           value={input}

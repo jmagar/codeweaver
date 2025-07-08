@@ -1,7 +1,16 @@
 import { z } from 'zod';
-import { streamText } from 'ai';
+import { streamText, CoreMessage } from 'ai';
 import { createTRPCRouter, publicProcedure } from '../trpc';
-import { CoreMessage } from 'ai';
+
+const messageSchema = z.object({
+  id: z.string(),
+  role: z.enum(['user', 'assistant', 'system', 'tool', 'function']),
+  content: z.string(),
+  toolInvocations: z.optional(z.any()),
+  toolResult: z.optional(z.any()),
+  data: z.optional(z.any()),
+  annotations: z.optional(z.any()),
+});
 
 /**
  * The main router for chat-related functionality.
@@ -24,7 +33,7 @@ export const chatRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const result = await streamText({
-        model: ctx.aiProvider('mistralai/mistral-7b-instruct:free'),
+        model: ctx.aiProvider.chat('mistralai/mistral-7b-instruct:free'),
         messages: input.messages,
       });
 
