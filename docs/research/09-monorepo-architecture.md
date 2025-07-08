@@ -1,5 +1,8 @@
 # Monorepo Architecture Research
 
+**Version:** 1.0  
+**Date:** July 7, 2025
+
 ## Executive Summary
 
 This document provides comprehensive research on modern monorepo architecture patterns, focusing on pnpm workspaces, TypeScript project references, and Docker integration for 2024-2025 best practices.
@@ -276,10 +279,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
       
       - run: pnpm install --frozen-lockfile

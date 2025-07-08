@@ -1,7 +1,7 @@
 # CodeWeaver - Complete Technical PRD
 
 **Version:** 1.0  
-**Date:** January 2025  
+**Date:** July 7, 2025  
 **Status:** Draft
 
 ## 1. Executive Summary
@@ -264,8 +264,6 @@ export const chatRouter = createTRPCRouter({
 ### 7.2. Docker Compose Configuration (`docker-compose.yml`)
 
 ```yaml
-version: '3.9'
-
 services:
   app:
     build:

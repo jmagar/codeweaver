@@ -1,7 +1,7 @@
 # Comprehensive Directory Structure Guide
 
 **Version:** 1.0  
-**Date:** January 2025
+**Date:** July 7, 2025
 
 ## 1. Overview
 
@@ -27,11 +27,9 @@ The root of the monorepo contains top-level configuration files that govern the 
 ├── pnpm-workspace.yaml       # Defines the pnpm workspace layout
 ├── README.md                 # Project overview and setup instructions
 ├── tsconfig.json             # Root TypeScript config for project references
-└── turbo.json                # Turborepo pipeline configuration
 ```
 
 - **`pnpm-workspace.yaml`**: The heart of the monorepo, defining which directories are part of the workspace.
-- **`turbo.json`**: Configures the build system pipelines, defining task dependencies and caching strategies.
 - **`tsconfig.json`**: The root TypeScript file that uses `references` to link all the packages and apps together, enabling incremental builds.
 
 ## 3. `apps/` Directory
@@ -42,7 +40,6 @@ This directory contains the actual applications that are deployed. Each sub-dire
 apps/
 └── web/
     ├── .env.local
-    ├── .eslintrc.js
     ├── next.config.mjs
     ├── package.json
     ├── postcss.config.js
@@ -66,7 +63,6 @@ apps/
     │   └── lib/
     │       └── trpc/
     │           └── client.ts       # Client-side tRPC provider
-    └── tailwind.config.ts
 ```
 
 - **`apps/web`**: The main Next.js 15 frontend application. It imports shared logic from the `packages/` directory.
@@ -83,6 +79,8 @@ packages/
 │   │   ├── context.ts         # tRPC context creation
 │   │   ├── root.ts            # Root tRPC router (_app)
 │   │   ├── routers/           # Domain-specific routers (user, chat, etc.)
+│   │   │   ├── health.ts      # Health check router
+│   │   │   └── user.ts        # User management router
 │   │   └── trpc.ts            # tRPC initialization
 │   └── package.json
 ├── db/
@@ -95,7 +93,6 @@ packages/
 ├── lib/
 │   ├── src/
 │   │   ├── ai/                # AI provider abstractions
-│   │   ├── mcp/               # MCP client logic
 │   │   └── utils/             # General utility functions
 │   └── package.json
 └── ui/
@@ -116,10 +113,6 @@ This directory contains configurations and scripts related to development toolin
 
 ```
 tooling/
-├── eslint/
-│   ├── next.js
-│   ├── react.js
-│   └── package.json
 ├── prettier/
 │   ├── index.js
 │   └── package.json
@@ -133,7 +126,6 @@ tooling/
     └── package.json
 ```
 
-- **`tooling/eslint`**: Contains shareable ESLint configurations (e.g., for Next.js apps, for React libraries). Applications and packages will extend these configs in their local `.eslintrc.js`.
 - **`tooling/prettier`**: A single, shared Prettier configuration to enforce consistent code style everywhere.
 - **`tooling/tsconfig`**: Contains base TypeScript configurations (`tsconfig.base.json`, `tsconfig.nextjs.json`, etc.) that are extended by the `tsconfig.json` files in individual apps and packages.
 - **`tooling/jest`**: Shared Jest configuration presets for unit and integration testing.

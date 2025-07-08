@@ -1,7 +1,7 @@
 # Implementation Roadmap for CodeWeaver
 
 **Version:** 1.0  
-**Date:** January 2025
+**Date:** July 7, 2025
 
 ## 1. Overview
 
@@ -15,9 +15,9 @@ This document outlines the phased implementation roadmap for the CodeWeaver proj
 
 | Task ID | Description                                     | Deliverables                                                              | Status      |
 | ------- | ----------------------------------------------- | ------------------------------------------------------------------------- | ----------- |
-| P1-T1   | Initialize pnpm monorepo and Git repository     | Project structure, `package.json`, `pnpm-workspace.yaml`, `turbo.json`    | To Do       |
+| P1-T1   | Initialize pnpm monorepo and Git repository     | Project structure, `package.json`, `pnpm-workspace.yaml`,   | To Do       |
 | P1-T2   | Set up Docker Compose for PostgreSQL & Redis    | `docker-compose.yml`, running local infrastructure                        | To Do       |
-| P1-T3   | Create shared tooling configs (TS, ESLint)      | `tooling/` directory with base configurations                             | To Do       |
+| P1-T3   | Create shared tooling configs (TS)      | `tooling/` directory with base configurations                             | To Do       |
 | P1-T4   | Scaffold `packages/db` with Prisma schema       | Prisma schema for User, Auth, and Conversation models; generated client   | To Do       |
 | P1-T5   | Scaffold `packages/api` with tRPC               | Initial tRPC router, context setup, basic health check procedure          | To Do       |
 | P1-T6   | Implement User Authentication with NextAuth.js  | Google OAuth provider, session management, protected procedure middleware | To Do       |

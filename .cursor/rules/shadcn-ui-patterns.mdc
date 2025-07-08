@@ -1,0 +1,33 @@
+---
+name: shadcn-ui-patterns
+description: Defines patterns for using shadcn/ui in the monorepo.
+globs: ["packages/ui/**", "apps/web/**"]
+alwaysApply: true
+---
+### Adding New Shadcn Components
+
+The only correct way to add a new `shadcn/ui` component is to run the CLI from within the `packages/ui` directory. This ensures dependencies are added to the correct package and avoids pnpm workspace errors.
+
+**Correct Command:**
+```bash
+cd packages/ui
+pnpm dlx shadcn@latest add <component-name>
+```
+
+- Components are installed into `packages/ui/src/components/ui`.
+- Component dependencies (e.g., `@radix-ui/react-slot`) are added to `packages/ui/package.json`.
+
+### Using Components
+
+- **From `apps/web`**: Import components directly from the `@codeweaver/ui` package.
+  ```tsx
+  import { Button } from '@codeweaver/ui/components/ui/button';
+  ```
+- **Inside `packages/ui`**: Components can use the path alias defined in `apps/web/tsconfig.json`, as this is the primary consuming application.
+  ```tsx
+  import { cn } from '@/lib/utils';
+  ```
+
+### Tailwind CSS Configuration
+
+Remember that `apps/web/tailwind.config.ts` is configured to scan `packages/ui` for Tailwind classes. No changes are needed there when adding new components.

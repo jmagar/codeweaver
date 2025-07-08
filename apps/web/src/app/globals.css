@@ -1,84 +1,92 @@
 @import "tailwindcss";
+@source "../../../../apps/web"; /* Add this to ensure your shared UI components are scanned */
+
+@theme {
+  /* 
+    These are now the actual theme tokens.
+    Tailwind v4 automatically creates utilities like `bg-background`, `text-foreground`, etc.
+  */
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(222.2 84% 4.9%);
+  --color-border: hsl(214.3 31.8% 91.4%);
+  --color-primary: hsl(221.2 83.2% 53.3%);
+}
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --border: 214.3 31.8% 91.4%;
-    --primary: 221.2 83.2% 53.3%;
-  }
-
+  /*
+    The .dark class now overrides the root theme variables directly.
+    Tailwind's dark mode will handle applying this automatically.
+  */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --primary: 217.2 91.2% 59.8%;
+    --color-background: hsl(222.2 84% 4.9%);
+    --color-foreground: hsl(210 40% 98%);
+    --color-border: hsl(217.2 32.6% 17.5%);
+    --color-primary: hsl(217.2 91.2% 59.8%);
   }
-}
 
-@layer base {
   * {
-    border-color: hsl(var(--border));
+    /* Reference the theme variables directly */
+    border-color: var(--color-border);
   }
+
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }
 
-/* Custom utilities for modern effects */
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  /* Gradient text effect */
-  .text-gradient {
-    background-clip: text;
-    color: transparent;
-    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.5));
-  }
-  
-  /* Glass morphism effect */
-  .glass {
-    background-color: hsl(var(--background) / 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid hsl(var(--border) / 0.5);
-  }
-  
-  /* Modern shadow with color */
-  .shadow-glow {
-    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
-  }
-  
-  /* Smooth animations */
-  .animate-in {
-    animation: animate-in 0.2s ease-out;
-  }
-  
-  .animate-out {
-    animation: animate-out 0.15s ease-in;
-  }
+/* 
+  Custom utilities are now defined with the @utility directive.
+  This makes them work with variants (hover:, lg:, etc.) automatically.
+*/
+@utility text-balance {
+  text-wrap: balance;
 }
 
-@keyframes animate-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@utility text-gradient {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 50%, transparent));
 }
 
-@keyframes animate-out {
-  from {
-    opacity: 1;
-    transform: translateY(0);
+@utility glass {
+  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+}
+
+@utility shadow-glow {
+  box-shadow: 0 0 20px -5px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* 
+  Keyframes for animations should be defined inside the @theme block
+  along with their corresponding animation utilities. This allows
+  Tailwind to tree-shake them if they aren't used.
+*/
+@theme {
+  --animate-in: animate-in 0.2s ease-out;
+  --animate-out: animate-out 0.15s ease-in;
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    opacity: 0;
-    transform: translateY(4px);
+
+  @keyframes animate-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(4px);
+    }
   }
 }

@@ -1,3 +1,10 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "css.customData": [".vscode/tailwind-css-data.json"],
+    "css.validate": true,
+    "css.lint.unknownAtRules": "ignore",
+    "scss.validate": true,
+    "scss.lint.unknownAtRules": "ignore",
+    "less.validate": true,
+    "less.lint.unknownAtRules": "ignore"
 }

@@ -1,7 +1,7 @@
 # Docker Development Setup Guide
 
 **Version:** 1.0  
-**Date:** January 2025
+**Date:** July 7, 2025
 
 ## 1. Overview
 
@@ -17,8 +17,6 @@ This guide explains how to use Docker and Docker Compose to set up a consistent 
 The core of our development setup is the `docker-compose.yml` file located at the root of the monorepo.
 
 ```yaml
-version: '3.9'
-
 services:
   # PostgreSQL database with pgvector extension
   postgres:
@@ -69,7 +67,7 @@ volumes:
 To start all the services defined in the `docker-compose.yml` file, run the following command from the root of the project:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 - The `-d` flag runs the containers in detached mode, meaning they run in the background.
 
@@ -77,7 +75,7 @@ docker-compose up -d
 You can check the status of your running containers with:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 You should see both the `postgres` and `redis` services listed with a `State` of `Up`.
 
@@ -89,25 +87,25 @@ Your Next.js application (running locally via `pnpm dev`) is pre-configured via 
 ### Stopping the Services
 To stop the running services:
 ```bash
-docker-compose down
+docker compose down
 ```
-This stops and removes the containers. Because we use named volumes, your data is safe and will be available the next time you run `docker-compose up -d`.
+This stops and removes the containers. Because we use named volumes, your data is safe and will be available the next time you run `docker compose up -d`.
 
 ### Stopping Services and Deleting Data
 If you want to stop the services AND completely wipe all data (PostgreSQL and Redis), run:
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 **Warning**: This is a destructive action and will permanently delete your local database and cache data.
 
 ### Viewing Logs
 To view the logs from all running services in real-time:
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 To view logs for a specific service (e.g., `postgres`):
 ```bash
-docker-compose logs -f postgres
+docker compose logs -f postgres
 ```
 
 ## 6. Database Seeding and Management

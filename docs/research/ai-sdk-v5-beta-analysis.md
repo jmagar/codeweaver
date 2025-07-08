@@ -1,3 +1,6 @@
+**Version:** 1.0  
+**Date:** July 7, 2025
+
 # AI SDK v5 Beta - Comprehensive Feature Analysis
 
 ## Executive Summary

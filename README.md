@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CodeWeaver: AI-Assisted Development Environment
 
 CodeWeaver is a next-generation, AI-assisted development environment designed for modern engineering teams. It provides a seamless, multi-modal, and agentic coding experience by integrating multiple cutting-edge AI providers, a robust real-time API layer, and a scalable, containerized infrastructure.
@@ -11,13 +10,13 @@ CodeWeaver is a next-generation, AI-assisted development environment designed fo
 - **Extensible Tooling**: **Model Context Protocol (MCP)** support allows the application to connect with external tools and data sources.
 - **End-to-End Type Safety**: A fully type-safe API layer built with **tRPC**, including real-time WebSocket subscriptions.
 - **Modern Frontend**: Built with **Next.js 15** and **React 19**, styled with **TailwindCSS 4**.
-- **Containerized & Observable**: Deployed via **Docker Compose** with a full monitoring stack (Prometheus, Grafana, OpenTelemetry).
+- **Containerized**: Deployed via **Docker Compose**.
 
 ## 🛠️ Tech Stack
 
 | Category                  | Technology                                     |
 | ------------------------- | ---------------------------------------------- |
-| **Monorepo & Build**      | pnpm Workspaces, TypeScript, Turbo             |
+| **Monorepo & Build**      | pnpm Workspaces, TypeScript                    |
 | **Frontend**              | Next.js 15, React 19, TailwindCSS 4            |
 | **API Layer**             | tRPC, WebSockets                               |
 | **Database**              | PostgreSQL 15, Prisma, `pgvector`              |
@@ -25,12 +24,11 @@ CodeWeaver is a next-generation, AI-assisted development environment designed fo
 | **Authentication**        | NextAuth.js, Google OAuth                      |
 | **AI Integration**        | Vercel AI SDK v5, MCP, OpenRouter, Claude, Gemini|
 | **Deployment**            | Docker, Docker Compose                         |
-| **Observability**         | OpenTelemetry, Prometheus, Grafana             |
 
 ## 📋 Prerequisites
 
-- **Node.js 20+**
-- **pnpm 8+**
+- **Node.js 24+**
+- **pnpm 9+**
 - **Docker & Docker Compose**
 - **Google Cloud Credentials** for OAuth
 
@@ -79,7 +77,7 @@ GEMINI_API_KEY="your-gemini-api-key"
 The entire local development stack is managed by Docker Compose. This command will start PostgreSQL and Redis.
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 4. Install dependencies
@@ -99,7 +97,7 @@ pnpm db:push
 
 ### 6. Start the development server
 
-This command uses `turbo` to run all applications (`web`, `api`, etc.) in development mode.
+This command uses `pnpm` to run all applications (`web`, `api`, etc.) in development mode.
 
 ```bash
 pnpm dev
@@ -130,16 +128,12 @@ codeweaver/
 ├── packages/
 │   ├── api/                 # Shared tRPC router and API logic
 │   ├── ui/                  # Shared React components (e.g., Shadcn UI)
-│   ├── config/
-│   │   ├── eslint/          # Shared ESLint configuration
-│   │   └── tsconfig/        # Shared TypeScript configurations
 │   ├── db/                  # Prisma schema and database client
 │   └── lib/                 # Shared utilities and libraries
-└── .env.example             # Example environment variables
-└── docker-compose.yml       # Docker Compose for infrastructure
-└── package.json             # Root package.json
+├── .env.example             # Example environment variables
+├── docker-compose.yml       # Docker Compose for infrastructure
+├── package.json             # Root package.json
 └── pnpm-workspace.yaml      # pnpm workspace configuration
-└── turbo.json               # Turborepo configuration
 ```
 
 ## 🔐 Authentication
@@ -161,7 +155,7 @@ The application is designed for containerized deployments using Docker.
 Use the provided `docker-compose.yml` to spin up the required services (PostgreSQL, Redis).
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Production
@@ -169,7 +163,6 @@ A production-ready `docker-compose.prod.yml` (or a similar Kubernetes configurat
 1. Building optimized, multi-stage Docker images for each application.
 2. Managing secrets using Docker Secrets or a cloud provider's secret manager.
 3. Configuring network policies for secure inter-service communication.
-4. Setting up the full observability stack (Prometheus, Grafana).
 
 ## 🤝 Contributing
 
@@ -184,6 +177,3 @@ Contributions are welcome! Please follow these steps:
 ---
 
 Built with ❤️ and the future of AI.
-=======
-# codeweaver
->>>>>>> 15f2f157e1212d435dc39cbe92cdbbc486d36262

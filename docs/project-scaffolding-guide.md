@@ -1,7 +1,7 @@
 # Complete Project Scaffolding Guide
 
 **Version:** 1.0  
-**Date:** January 2025
+**Date:** July 7, 2025
 
 ## 1. Introduction
 
@@ -181,7 +181,7 @@ pnpm --filter web add @codeweaver/api @codeweaver/ui @codeweaver/db
 After all packages and apps are scaffolded:
 1.  Run `pnpm install` from the root to link all workspace packages correctly.
 2.  Create your `.env.development` file from the example and add your secrets.
-3.  Start the infrastructure: `docker-compose up -d`.
+3.  Start the infrastructure: `docker compose up -d`.
 4.  Push the database schema: `pnpm db:push`.
 5.  Start the development server: `pnpm dev`.
 6.  Visit `http://localhost:3000` to verify the application is running.

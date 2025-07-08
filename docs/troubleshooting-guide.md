@@ -1,7 +1,7 @@
 # Troubleshooting & Debugging Guide
 
 **Version:** 1.0  
-**Date:** January 2025
+**Date:** July 7, 2025
 
 ## 1. Overview
 
@@ -14,7 +14,7 @@ When your local environment gets into a strange state, a full reset can often so
 **Complete Environment Reset Procedure:**
 ```bash
 # 1. Stop and remove all Docker containers, networks, and volumes
-docker-compose down -v
+docker compose down -v
 
 # 2. Remove all node_modules and build artifacts
 git clean -fdx
@@ -23,7 +23,7 @@ git clean -fdx
 pnpm install
 
 # 4. Start the infrastructure services again
-docker-compose up -d
+docker compose up -d
 
 # 5. Push the database schema
 pnpm db:push

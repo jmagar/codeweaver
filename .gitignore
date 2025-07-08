@@ -60,3 +60,7 @@ build
 /.vercel
 /node_modules
 /.pnpm-store
+
+# Environment variables
+.env
+.env*.local

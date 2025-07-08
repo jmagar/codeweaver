@@ -1,7 +1,7 @@
 # API-First Development Guide for CodeWeaver
 
 **Version:** 1.0  
-**Date:** January 2025
+**Date:** July 7, 2025
 
 ## 1. Introduction
 

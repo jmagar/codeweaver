@@ -1,0 +1,35 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Define theme variables for TailwindCSS 4.x",
+      "references": [
+        {
+          "name": "TailwindCSS 4 Theme Documentation",
+          "url": "https://tailwindcss.com/docs/theme"
+        }
+      ]
+    },
+    {
+      "name": "@utility",
+      "description": "Define custom utility classes for TailwindCSS 4.x",
+      "references": [
+        {
+          "name": "TailwindCSS 4 Utility Documentation", 
+          "url": "https://tailwindcss.com/docs/adding-custom-styles"
+        }
+      ]
+    },
+    {
+      "name": "@source",
+      "description": "Define content sources for TailwindCSS 4.x",
+      "references": [
+        {
+          "name": "TailwindCSS 4 Configuration",
+          "url": "https://tailwindcss.com/docs/installation"
+        }
+      ]
+    }
+  ]
+}

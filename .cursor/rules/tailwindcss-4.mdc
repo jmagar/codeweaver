@@ -1,6 +1,6 @@
 ---
 description: Defines patterns and best practices for TailwindCSS 4.x, including theme variables, custom utilities, and migration from v3.x.
-globs: ["**/*.css", "apps/web/src/app/globals.css"]
+globs: ["**/*.css"]
 alwaysApply: false
 ---
 # Rule: TailwindCSS 4.x Patterns and Best Practices
