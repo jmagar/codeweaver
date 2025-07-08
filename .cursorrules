@@ -1,1 +1,56 @@
-### Create high level .cursorrules from all of the rules in  @.cursor/rules
+### CodeWeaver Project Rules Summary
+
+This file provides a high-level summary of the rules defined in the `.cursor/rules/` directory.
+
+#### 1. Architecture & Structure (@.cursor/rules/architecture-patterns.mdc, @.cursor/rules/directory-structure.mdc, @.cursor/rules/monorepo-rules.mdc)
+- **Monorepo**: A `pnpm` workspace with `apps`, `packages`, and `tooling` directories.
+    - **`apps/web`**: The main Next.js 15 frontend application.
+    - **`packages/api`**: Contains all tRPC routers, procedures, and API-related logic.
+    - **`packages/db`**: Manages the Prisma schema, database client, and migrations.
+    - **`packages/lib`**: For shared, pure TypeScript utilities, constants, and core business logic.
+        - `src/ai`: Abstractions for interacting with external AI providers.
+        - `src/mcp`: Logic related to the Model Context Protocol.
+        - `src/utils`: General-purpose shared utilities.
+    - **`packages/ui`**: Contains the shared `shadcn/ui` React component library.
+- **tRPC API**: A decoupled, end-to-end type-safe API layer defined in `packages/api`. All business logic and database interactions must go through this layer.
+- **Containerization**: Currently, only the infrastructure (Postgres, Redis) is containerized with Docker.
+- **Type Safety**: Enforce end-to-end type safety using Prisma, tRPC, and Zod.
+
+#### 2. Development Workflow (@.cursor/rules/development-workflow.mdc, @.cursor/rules/bivvy.mdc)
+- **Git**: Follow the standard feature branch workflow (e.g., `feature/add-x`, `fix/y`) with Pull Requests.
+- **Commits**: Use [Conventional Commits](https://www.conventionalcommits.org/) for clear and standardized commit messages.
+- **Local Checks**: Always run `pnpm lint`, `pnpm typecheck` before pushing changes.
+- **Task Management**: For new features or significant tasks, use the "Bivvy" (@.cursor/rules/bivvy.mdc) process to define a PRD and a task list ("Moves").
+
+#### 3. Code & Style (@.cursor/rules/code-style.mdc, @.cursor/rules/naming-conventions.mdc, @.cursor/rules/react-component-patterns.mdc)
+- **Linting & Formatting**: Enforced by ESLint and Prettier. Run `pnpm format` and `pnpm lint` before committing.
+- **Import Order**: Imports are sorted automatically (`react`, external libs, internal aliases `@/`, relative `../`).
+- **React**: Components must be functional, use hooks, and have clearly defined props.
+- **Naming Conventions**:
+    - **Components/Models**: `PascalCase`
+    - **Variables/Functions/Fields**: `camelCase`
+    - **Files**: `kebab-case.ts` (or `.tsx`)
+    - **Directories**: `kebab-case`
+    - **tRPC Procedures**: `camelCase` (e.g., `getUsers`, `updateProfile`)
+
+#### 4. Database & API (@.cursor/rules/database-patterns.mdc, @.cursor/rules/trpc-router-template.mdc)
+- **Schema**: All schema changes must be done in `packages/db/prisma/schema.prisma` and applied via Prisma migrations.
+- **Queries**: Use Prisma Client following best practices (e.g., `select`, `include` to avoid over-fetching).
+- **Vector Storage**: Use the `pgvector` extension for storing embeddings. Always create an index on vector fields for efficient similarity search.
+- **tRPC Routers**: New routers must follow the provided template, including health checks and standard structure.
+
+#### 5. External Services & AI (@.cursor/rules/ai-provider-patterns.mdc, @.cursor/rules/ai-sdk-v5.mdc)
+- **Abstraction**: Access external AI services through the provider abstraction layer in `packages/lib/src/ai`.
+- **UI/UX**: Use the Vercel AI SDK v5 for building AI interfaces, including multi-modal content and tool usage.
+
+#### 6. UI Components (@.cursor/rules/shadcn-ui-patterns.mdc)
+- **Adding Components**: Use `pnpm dlx shadcn@latest add <component-name>` from within the `packages/ui` directory.
+- **Component Location**: Components are installed into `packages/ui/src/components/ui`.
+
+#### 7. Quality & Maintenance (@.cursor/rules/error-handling-logging.mdc, @.cursor/rules/performance-optimization.mdc, @.cursor/rules/documentation-standards.mdc)
+- **Logging**: Implement structured logging for all application layers.
+- **Performance**: Follow performance best practices for React, database queries, and bundle size.
+- **Documentation**: Document all public APIs, components, and complex logic.
+
+#### 8. UI/UX Design Principles
+- **Mobile-First**: Design and build components for mobile screen sizes first, then scale up to desktop using responsive design techniques.
