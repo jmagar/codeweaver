@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+{"reminder":"Remember to use your .cursor/rules","rules":["@.cursor/rules/ai-provider-patterns.mdc","@.cursor/rules/ai-sdk-v5.mdc","@.cursor/rules/architecture-patterns.mdc","@.cursor/rules/bivvy.mdc","@.cursor/rules/code-style.mdc","@.cursor/rules/database-patterns.mdc","@.cursor/rules/development-workflow.mdc","@.cursor/rules/directory-structure.mdc","@.cursor/rules/documentation-standards.mdc","@.cursor/rules/error-handling-logging.mdc","@.cursor/rules/monorepo-rules.mdc","@.cursor/rules/naming-conventions.mdc","@.cursor/rules/performance-optimization.mdc","@.cursor/rules/react-component-patterns.mdc","@.cursor/rules/shadcn-ui-patterns.mdc","@.cursor/rules/tailwindcss-4.mdc","@.cursor/rules/trpc-router-template.mdc"]}

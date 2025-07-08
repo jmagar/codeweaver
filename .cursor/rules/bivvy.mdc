@@ -1,10 +1,11 @@
 ---
-description: Creating, working on, or closing a pitch(feature, bug, task, or exploration).
+description: Creating, working on, or closing a pitch, PRD, feature, bug, task, research mission, or exploration).
 globs: 
 alwaysApply: false
 ---
+
 ## Description
-When a user requests to start a new Climb(feature, bug, task, or exploration), you will start a 2-phase process: Step 1 is to define a Product Requirements Document (PRD) via conversation with the user; Step 2 is to build a task list (a.k.a. "Moves") from that PRD.
+When a user requests to start a new Climb, feature, bug, task, exploration, or research mission, you will start a 3-phase process: Step 1 is to define a Product Requirements Document (PRD) via conversation with the user; Step 2 is to use search (mcp-searxng) and sequentialthinking_tools(mcp-sequentialthinking-tools) to do a sweeping and comprehensive series of web searches on all relevant topics followed by running get_deep_directory_dir(deep-directory-tree-mcp) /path/to/project/root to picture the project structure, finally finishing with Step 3 which is to build a task list (a.k.a. "Moves") from that PRD.
 
 Once alerted, you will then begin working on the Climb, move-by-move, soliciting user feedback and approval.  Moves can have "rest: true" on it, at which point you WILL ALWAYS stop after completion to check with the user on status.  They can also have the status "skip" on them, in which case you will skip  it and ASK the user at the end if they want to return to it.  Once you reach the end of the Moves list and they've opted out of skipping, you will mark the Climb as complete in both the PRD and the Moves list, and move both files to the .bivvy/complete/ directory.
 
