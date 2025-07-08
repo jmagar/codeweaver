@@ -90,13 +90,14 @@ function toTransport(conf: ServerConfig): TransportConfig {
 
   // Default: stdio transport
   const std = conf as StdioConfig;
+  const cwd = std.cwd ? untildify(expandVars(std.cwd)) : undefined;
   return new Experimental_StdioMCPTransport({
     command: expandVars(std.command),
     args: std.args?.map(expandVars),
     env: std.env && Object.fromEntries(
       Object.entries(std.env).map(([k, v]) => [k, expandVars(v)])
     ),
-    cwd: untildify(expandVars(std.cwd)),
+    ...(cwd ? { cwd } : {}),
     stderr: std.stderr,
   });
 }
