@@ -1,8 +1,10 @@
 {
-  "extends": "../../tooling/tsconfig/base.json",
+  "extends": "@codeweaver/tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "module": "node16",
+    "moduleResolution": "node16"
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

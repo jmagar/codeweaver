@@ -5,15 +5,16 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "@prisma/client": "^6.11.1",
     "@codeweaver/db": "workspace:*",
+    "@prisma/client": "^6.11.1",
     "@trpc/server": "^11.4.3",
+    "ai": "^4.3.17",
     "superjson": "^2.2.2",
     "zod": "^3.25.75"
   },
   "devDependencies": {
-    "@types/node": "^24.0.10",
     "@codeweaver/tsconfig": "workspace:*",
+    "@types/node": "^24.0.10",
     "typescript": "^5.8.3"
   },
   "scripts": {
@@ -21,4 +22,4 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc -p . --noEmit"
   }
-} 
+}
