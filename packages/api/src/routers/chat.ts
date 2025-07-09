@@ -4,7 +4,8 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 import { observable } from '@trpc/server/observable';
 import { EventEmitter } from 'events';
 
-// Create an event emitter to broadcast messages
+// TODO: Replace with Redis pub/sub for multi-instance support
+// For now, using EventEmitter (single instance only)
 const ee = new EventEmitter();
 ee.setMaxListeners(0);
 
