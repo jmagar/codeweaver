@@ -12,10 +12,13 @@
     "@types/node": "^24.0.10",
     "typescript": "^5.8.3"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.0-beta.5",
+    "zod": "^3.25.76"
+  },
   "scripts": {
     "build": "tsc -p . --outDir dist",
     "clean": "rm -rf dist",
     "typecheck": "tsc -p . --noEmit"
   }
-} 
+}

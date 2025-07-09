@@ -1,8 +1,12 @@
 {
-  "extends": "../../tooling/tsconfig/base.json",
+  "extends": "@codeweaver/tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "composite": true,
+    "declaration": true,
+    "outDir": "dist",
+    "module": "ES2022",
+    "moduleResolution": "bundler"
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

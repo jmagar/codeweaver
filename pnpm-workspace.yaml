@@ -10,3 +10,4 @@ onlyBuiltDependencies:
   - protobufjs
   - sharp
   - unrs-resolver
+  - esbuild
