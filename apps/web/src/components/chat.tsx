@@ -1,58 +1,42 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { trpc } from '@/utils/trpc';
+import { type FormEvent, useState } from 'react';
 
 export function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, setMessages } =
-    useChat({
-      async onFinish(message) {
-        // TBD
-      },
-    });
+  const { messages, sendMessage } = useChat();
+  const [input, setInput] = useState('');
 
-  const chatMutation = trpc.chat.sendMessage.useMutation({
-    onSuccess: (data) => {
-      setMessages([
-        ...messages,
-        {
-          id: Date.now().toString(),
-          role: 'assistant',
-          content: data.content,
-        },
-      ]);
-    },
-  });
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input) return;
+    sendMessage({
+      role: 'user' as const,
+      parts: [{ type: 'text', text: input }],
+    });
+    setInput('');
+  };
 
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       {messages.map(m => (
         <div key={m.id} className="whitespace-pre-wrap">
           <strong>{`${m.role}: `}</strong>
-          {m.content}
+          {m.parts.map((part, i) => {
+            switch (part.type) {
+              case 'text':
+                return <span key={i}>{part.text}</span>;
+            }
+          })}
         </div>
       ))}
 
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          const newMessages = [
-            ...messages,
-            {
-              id: Date.now().toString(),
-              role: 'user',
-              content: input,
-            },
-          ];
-          setMessages(newMessages);
-          chatMutation.mutate({ messages: newMessages });
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
           value={input}
           placeholder="Say something..."
-          onChange={handleInputChange}
+          onChange={e => setInput(e.target.value)}
         />
       </form>
     </div>

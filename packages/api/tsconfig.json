@@ -2,8 +2,8 @@
   "extends": "@codeweaver/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "module": "node16",
-    "moduleResolution": "node16"
+    "module": "ES2022",
+    "moduleResolution": "bundler"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
