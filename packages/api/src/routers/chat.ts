@@ -1,55 +1,79 @@
 import { z } from 'zod';
-import { streamText, convertToCoreMessages } from 'ai';
+import { streamText } from 'ai';
 import { createTRPCRouter, publicProcedure } from '../trpc';
+import { observable } from '@trpc/server/observable';
+import { EventEmitter } from 'events';
 
-// Schema for the message format that useChat sends
+// Create an event emitter to broadcast messages
+const ee = new EventEmitter();
+
 const messageSchema = z.object({
   id: z.string(),
-  role: z.enum(['user', 'assistant', 'system']),
   content: z.string(),
-  createdAt: z.date().optional(),
-  data: z.any().optional(),
-  annotations: z.any().optional(),
+  role: z.enum(['user', 'assistant']),
 });
 
-/**
- * The main router for chat-related functionality.
- *
- * @see https://trpc.io/docs/server/routers
- */
-export const chatRouter = createTRPCRouter({
-  /**
-   * A placeholder procedure. We will add the `sendMessage` mutation here.
-   */
-  hello: publicProcedure.query(() => {
-    return 'Hello from the chat router!';
-  }),
+type Message = z.infer<typeof messageSchema>;
 
+export const chatRouter = createTRPCRouter({
   sendMessage: publicProcedure
     .input(
       z.object({
-        messages: z.array(messageSchema),
+        message: z.string(),
+        // We'll add conversation history later
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      // Convert the messages to CoreMessage format for the AI provider
-      // The frontend sends {id, role, content} format, we need to convert to Core format
-      const coreMessages = input.messages.map(msg => ({
-        role: msg.role,
-        content: msg.content,
-      }));
+      const userMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'user',
+        content: input.message,
+      };
+
+      // Emit the user's message immediately
+      ee.emit('newMessage', userMessage);
+
+      const assistantMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: '',
+      };
       
+      // Emit an empty assistant message to start
+      ee.emit('newMessage', assistantMessage);
+
+      // Stream the AI response
       const result = await streamText({
         model: ctx.aiProvider('mistralai/mistral-7b-instruct:free'),
-        messages: coreMessages,
+        messages: [{ role: 'user', content: input.message }],
       });
 
-      // Return the full text content once the stream is complete.
-      // This is a temporary measure to get a working endpoint.
-      // We will implement proper streaming in a future step.
-      return {
-        role: 'assistant',
-        content: await result.text,
-      };
+      // As chunks of the AI's response come in, update the message
+      for await (const delta of result.textStream) {
+        assistantMessage.content += delta;
+        ee.emit('updateMessage', assistantMessage);
+      }
+
+      return { success: true };
     }),
+  
+  onMessage: publicProcedure.subscription(() => {
+    return observable<Message>(emit => {
+      const onNewMessage = (data: Message) => {
+        emit.next(data);
+      };
+      
+      const onUpdateMessage = (data: Message) => {
+        emit.next(data);
+      };
+
+      ee.on('newMessage', onNewMessage);
+      ee.on('updateMessage', onUpdateMessage);
+
+      return () => {
+        ee.off('newMessage', onNewMessage);
+        ee.off('updateMessage', onUpdateMessage);
+      };
+    });
+  }),
 }); 

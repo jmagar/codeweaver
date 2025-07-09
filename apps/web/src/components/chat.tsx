@@ -1,19 +1,41 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
-import { type FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
+import { trpc } from '@/utils/trpc';
+
+interface Message {
+  id: string;
+  content: string;
+  role: 'user' | 'assistant';
+}
 
 export function Chat() {
-  const { messages, sendMessage } = useChat();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+
+  const sendMessageMutation = trpc.chat.sendMessage.useMutation();
+
+  trpc.chat.onMessage.useSubscription(undefined, {
+    onData(data) {
+      setMessages(prevMessages => {
+        const existingMessageIndex = prevMessages.findIndex(m => m.id === data.id);
+        if (existingMessageIndex !== -1) {
+          // Update existing message
+          const newMessages = [...prevMessages];
+          newMessages[existingMessageIndex] = data;
+          return newMessages;
+        } else {
+          // Add new message
+          return [...prevMessages, data];
+        }
+      });
+    },
+  });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input) return;
-    sendMessage({
-      role: 'user' as const,
-      parts: [{ type: 'text', text: input }],
-    });
+    sendMessageMutation.mutate({ message: input });
     setInput('');
   };
 
@@ -22,12 +44,7 @@ export function Chat() {
       {messages.map(m => (
         <div key={m.id} className="whitespace-pre-wrap">
           <strong>{`${m.role}: `}</strong>
-          {m.parts.map((part, i) => {
-            switch (part.type) {
-              case 'text':
-                return <span key={i}>{part.text}</span>;
-            }
-          })}
+          <span>{m.content}</span>
         </div>
       ))}
 
@@ -37,6 +54,7 @@ export function Chat() {
           value={input}
           placeholder="Say something..."
           onChange={e => setInput(e.target.value)}
+          disabled={sendMessageMutation.isPending}
         />
       </form>
     </div>
