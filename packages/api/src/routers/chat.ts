@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 
 // Create an event emitter to broadcast messages
 const ee = new EventEmitter();
+ee.setMaxListeners(0);
 
 const messageSchema = z.object({
   id: z.string(),
@@ -16,6 +17,7 @@ const messageSchema = z.object({
 type Message = z.infer<typeof messageSchema>;
 
 export const chatRouter = createTRPCRouter({
+  // Mutation: send a message and stream assistant response
   sendMessage: publicProcedure
     .input(
       z.object({
@@ -25,13 +27,13 @@ export const chatRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // The last message is the new one from the user
       const lastMessage = input.messages[input.messages.length - 1];
-      
+
       // Emit the user's message immediately if it's not already on the client
       // (The client-side optimistic update handles this, but this is a safeguard)
       if (lastMessage && lastMessage.role === 'user') {
         ee.emit('newMessage', lastMessage);
       }
-      
+
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -50,21 +52,17 @@ export const chatRouter = createTRPCRouter({
       // As chunks of the AI's response come in, update the message
       for await (const delta of result.textStream) {
         assistantMessage.content += delta;
-        ee.emit('updateMessage', assistantMessage);
+        ee.emit('updateMessage', { ...assistantMessage });
       }
 
       return assistantMessage;
     }),
   
+  // Subscription: receive new and updated messages in real-time
   onMessage: publicProcedure.subscription(() => {
     return observable<Message>(emit => {
-      const onNewMessage = (data: Message) => {
-        emit.next(data);
-      };
-      
-      const onUpdateMessage = (data: Message) => {
-        emit.next(data);
-      };
+      const onNewMessage = (data: Message) => emit.next(data);
+      const onUpdateMessage = (data: Message) => emit.next(data);
 
       ee.on('newMessage', onNewMessage);
       ee.on('updateMessage', onUpdateMessage);
@@ -76,3 +74,5 @@ export const chatRouter = createTRPCRouter({
     });
   }),
 }); 
+
+export type ChatRouter = typeof chatRouter; 

@@ -1,6 +1,8 @@
 {
   "extends": "@codeweaver/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
+    "declaration": true,
     "outDir": "dist",
     "module": "ES2022",
     "moduleResolution": "bundler"

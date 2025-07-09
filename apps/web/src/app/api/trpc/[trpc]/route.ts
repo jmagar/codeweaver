@@ -3,17 +3,13 @@ import { type NextRequest } from 'next/server';
 
 import { appRouter } from '@codeweaver/api';
 import { createTRPCContext } from '@codeweaver/api/src/context';
-import { env } from '@/env';
 
 const handler = (req: NextRequest) =>
   fetchRequestHandler({
     endpoint: '/api/trpc',
     req,
     router: appRouter,
-    createContext: () =>
-      createTRPCContext({
-        openRouterApiKey: env.OPENROUTER_API_KEY,
-      }),
+    createContext: () => createTRPCContext(),
     onError:
       process.env.NODE_ENV === 'development'
         ? ({ path, error }) => {

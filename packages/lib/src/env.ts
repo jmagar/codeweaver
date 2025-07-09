@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const envSchema = z.object({
+export const envSchema = z.object({
   // Database connection string (allow any non-empty string that starts with "postgresql://")
   DATABASE_URL: z
     .string()
@@ -19,4 +19,13 @@ const envSchema = z.object({
   // Auth (to be added later)
 });
 
-export const env = envSchema.parse(process.env); 
+export type Env = z.infer<typeof envSchema>;
+
+/**
+ * Factory function to parse environment values against the schema.
+ * @param values - An object containing environment variables, e.g., process.env
+ * @returns A validated environment configuration object.
+ */
+export function parseEnv(values: unknown): Env {
+  return envSchema.parse(values);
+} 

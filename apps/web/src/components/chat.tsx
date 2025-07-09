@@ -14,12 +14,7 @@ export function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
 
-  const sendMessageMutation = trpc.chat.sendMessage.useMutation({
-    onSuccess(data) {
-      // data is assistant message
-      setMessages(prev => [...prev, data]);
-    },
-  });
+  const sendMessageMutation = trpc.chat.sendMessage.useMutation();
 
   trpc.chat.onMessage.useSubscription(undefined, {
     onData(data) {

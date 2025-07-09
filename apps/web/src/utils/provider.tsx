@@ -15,7 +15,7 @@ export default function TRPCProvider({
   const [queryClient] = useState(() => new QueryClient({}));
   const [trpcClient] = useState(() => {
     const wsClient = createWSClient({
-      url: 'ws://localhost:3001',
+      url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001',
     });
 
     const link = splitLink({

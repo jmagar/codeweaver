@@ -1,8 +1,10 @@
 import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { type PrismaClient } from '@prisma/client';
-import { db } from '@codeweaver/db';
 import { createOpenAI } from '@ai-sdk/openai';
-import { env } from '../../lib/src/env';
+import { db } from '@codeweaver/db';
+import { parseEnv } from '../../lib/src/env';
+
+const env = parseEnv(process.env);
 
 export interface Context {
   session: null; // Placeholder for auth session
@@ -24,7 +26,7 @@ async function createInnerTRPCContext(
 }
 
 export async function createTRPCContext(
-  _opts: CreateNextContextOptions,
+  _opts?: CreateNextContextOptions,
 ): Promise<Context> {
   const innerContext = await createInnerTRPCContext({
     session: null,
