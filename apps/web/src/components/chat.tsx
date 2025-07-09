@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { trpc } from '@/utils/trpc';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
   id: string;
@@ -13,7 +14,12 @@ export function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
 
-  const sendMessageMutation = trpc.chat.sendMessage.useMutation();
+  const sendMessageMutation = trpc.chat.sendMessage.useMutation({
+    onSuccess(data) {
+      // data is assistant message
+      setMessages(prev => [...prev, data]);
+    },
+  });
 
   trpc.chat.onMessage.useSubscription(undefined, {
     onData(data) {
@@ -35,7 +41,23 @@ export function Chat() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input) return;
-    sendMessageMutation.mutate({ message: input });
+
+    const newUserMessage: Message = {
+      id: uuidv4(),
+      role: 'user',
+      content: input,
+    };
+
+    const newMessages = [...messages, newUserMessage];
+
+    // Optimistically update the UI
+    setMessages(newMessages);
+
+    // Send the whole conversation history
+    sendMessageMutation.mutate({
+      messages: newMessages,
+    });
+
     setInput('');
   };
 

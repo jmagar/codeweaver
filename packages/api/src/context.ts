@@ -1,32 +1,35 @@
+import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { type PrismaClient } from '@prisma/client';
 import { db } from '@codeweaver/db';
-import { PrismaClient } from '@prisma/client';
-import { createOpenRouterProvider } from '../../lib/src/ai/openrouter-provider';
+import { createOpenAI } from '@ai-sdk/openai';
+import { env } from '../../lib/src/env';
 
-/**
- * Configuration interface for creating tRPC context
- */
-export interface TRPCContextConfig {
-  openRouterApiKey: string;
+export interface Context {
+  session: null; // Placeholder for auth session
+  db: PrismaClient;
+  aiProvider: ReturnType<typeof createOpenAI>;
 }
 
-/**
- * Builds the tRPC context for each request.
- * Extend this once authentication and other services are in place.
- */
-export async function createTRPCContext(config: TRPCContextConfig): Promise<{
-  db: PrismaClient;
-  session: null;
-  aiProvider: ReturnType<typeof createOpenRouterProvider>;
-}> {
-  // TODO: integrate real session when auth is implemented.
-  const session = null;
-  const aiProvider = createOpenRouterProvider(config.openRouterApiKey);
+async function createInnerTRPCContext(
+  opts: Omit<Context, 'aiProvider'>,
+): Promise<Context> {
+  const aiProvider = createOpenAI({
+    apiKey: env.OPENAI_API_KEY,
+  });
 
   return {
-    db,
-    session,
+    ...opts,
     aiProvider,
   };
 }
 
-export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
+export async function createTRPCContext(
+  _opts: CreateNextContextOptions,
+): Promise<Context> {
+  const innerContext = await createInnerTRPCContext({
+    session: null,
+    db,
+  });
+
+  return innerContext;
+}

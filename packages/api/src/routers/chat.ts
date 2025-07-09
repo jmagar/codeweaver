@@ -19,20 +19,19 @@ export const chatRouter = createTRPCRouter({
   sendMessage: publicProcedure
     .input(
       z.object({
-        message: z.string(),
-        // We'll add conversation history later
+        messages: z.array(messageSchema),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const userMessage: Message = {
-        id: crypto.randomUUID(),
-        role: 'user',
-        content: input.message,
-      };
-
-      // Emit the user's message immediately
-      ee.emit('newMessage', userMessage);
-
+      // The last message is the new one from the user
+      const lastMessage = input.messages[input.messages.length - 1];
+      
+      // Emit the user's message immediately if it's not already on the client
+      // (The client-side optimistic update handles this, but this is a safeguard)
+      if (lastMessage && lastMessage.role === 'user') {
+        ee.emit('newMessage', lastMessage);
+      }
+      
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -44,8 +43,8 @@ export const chatRouter = createTRPCRouter({
 
       // Stream the AI response
       const result = await streamText({
-        model: ctx.aiProvider('mistralai/mistral-7b-instruct:free'),
-        messages: [{ role: 'user', content: input.message }],
+        model: ctx.aiProvider('gpt-3.5-turbo'),
+        messages: input.messages, // Pass the whole conversation
       });
 
       // As chunks of the AI's response come in, update the message
@@ -54,7 +53,7 @@ export const chatRouter = createTRPCRouter({
         ee.emit('updateMessage', assistantMessage);
       }
 
-      return { success: true };
+      return assistantMessage;
     }),
   
   onMessage: publicProcedure.subscription(() => {

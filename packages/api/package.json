@@ -11,6 +11,7 @@
     "@trpc/server": "^11.4.3",
     "@types/ws": "^8.18.1",
     "ai": "^5.0.0-beta.10",
+    "dotenv": "^17.1.0",
     "superjson": "^2.2.2",
     "ws": "^8.18.3",
     "zod": "^3.25.75"
@@ -18,13 +19,19 @@
   "devDependencies": {
     "@codeweaver/tsconfig": "workspace:*",
     "@types/node": "^24.0.10",
+    "dotenv-cli": "^8.0.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "build": "tsc -p . --outDir dist",
-    "clean": "rm -rf dist",
-    "typecheck": "tsc -p . --noEmit",
-    "dev:ws": "tsx src/ws.ts"
+    "build": "pnpm build:clean && pnpm build:generate && pnpm build:tsc",
+    "build:clean": "rm -rf dist",
+    "build:generate": "pnpm --filter @codeweaver/db generate",
+    "build:tsc": "tsc",
+    "clean": "rm -rf .turbo dist node_modules",
+    "dev:ws": "dotenv -e ../../.env.local -e ../../.env -- tsx src/ws.ts",
+    "lint": "eslint . --ext .ts,.tsx",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
   }
 }
